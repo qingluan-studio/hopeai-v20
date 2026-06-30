@@ -4,429 +4,2694 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>希望AI V20.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-java.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-html.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-sql.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markdown.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#6366f1',
+                        accent: '#10b981',
+                        warning: '#f59e0b',
+                        danger: '#ef4444',
+                        dark: { 900: '#0a0a0a', 800: '#111111', 700: '#171717', 600: '#1f1f1f', 500: '#272727', 400: '#3f3f46' },
+                    },
+                    animation: { 'slide-up': 'slideUp 0.3s ease-out', 'fade-in': 'fadeIn 0.2s ease-out', 'bounce-slow': 'bounce 1.5s infinite', 'pulse-glow': 'pulseGlow 2s ease-in-out infinite' },
+                    keyframes: {
+                        slideUp: { '0%': { opacity: '0', transform: 'translateY(10px)' }, '100%': { opacity: '1', transform: 'translateY(0)' } },
+                        fadeIn: { '0%': { opacity: '0' }, '100%': { opacity: '1' } },
+                        pulseGlow: { '0%,100%': { boxShadow: '0 0 20px rgba(59,130,246,0.3)' }, '50%': { boxShadow: '0 0 40px rgba(59,130,246,0.6)' } },
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Courier New', monospace;
-        }
-
-        body {
-            background-color: #000000;
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-
-        .header {
-            text-align: center;
-            padding: 10px;
-            border-bottom: 1px solid #333;
-        }
-
-        .header h1 {
-            font-size: 18px;
-            font-weight: normal;
-            color: #fff;
-        }
-
-        .orb-container {
-            display: flex;
-            justify-content: center;
-            padding: 15px;
-        }
-
-        #orb {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fff, #ccc);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            animation: breathe 3s ease-in-out infinite;
-        }
-
-        #orb.thinking {
-            animation: rotate 2s linear infinite, glow 1.5s ease-in-out infinite;
-        }
-
-        @keyframes breathe {
-            0%, 100% { transform: scale(1); opacity: 0.8; }
-            50% { transform: scale(1.1); opacity: 1; }
-        }
-
-        @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes glow {
-            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
-            50% { box-shadow: 0 0 40px rgba(255, 255, 255, 0.8), 0 0 60px rgba(255, 255, 255, 0.4); }
-        }
-
-        .chat-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .chat-area::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .chat-area::-webkit-scrollbar-track {
-            background: #111;
-        }
-
-        .chat-area::-webkit-scrollbar-thumb {
-            background: #444;
-            border-radius: 2px;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            max-width: 100%;
-        }
-
-        .message.system {
-            color: #888;
-            font-size: 12px;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .message.user .label {
-            color: #6a9bcc;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .message.user .content {
-            background: #1a1a1a;
-            padding: 10px 15px;
-            border-radius: 10px;
-            text-align: right;
-        }
-
-        .message.ai .label {
-            color: #d97757;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-
-        .message.ai .content {
-            background: #1a1a1a;
-            padding: 10px 15px;
-            border-radius: 10px;
-            white-space: pre-wrap;
-            word-break: break-word;
-        }
-
-        .message.ai .content code {
-            display: block;
-            background: #000;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 8px 0;
-            overflow-x: auto;
-            font-family: 'Courier New', monospace;
-            border: 1px solid #333;
-        }
-
-        .typing-indicator {
-            display: inline-block;
-            animation: blink 1s step-end infinite;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .input-area {
-            display: flex;
-            padding: 10px;
-            border-top: 1px solid #333;
-            background: #000;
-        }
-
-        .input-area input {
-            flex: 1;
-            background: #1a1a1a;
-            border: 1px solid #333;
-            border-radius: 20px;
-            padding: 12px 18px;
-            color: #fff;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .input-area input:focus {
-            border-color: #6a9bcc;
-        }
-
-        .input-area input::placeholder {
-            color: #555;
-        }
-
-        .input-area button {
-            margin-left: 10px;
-            padding: 12px 20px;
-            background: #6a9bcc;
-            border: none;
-            border-radius: 20px;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
-        .input-area button:hover {
-            background: #5a8bb8;
-        }
-
-        .input-area button:disabled {
-            background: #444;
-            cursor: not-allowed;
-        }
-
-        .status {
-            text-align: center;
-            font-size: 12px;
-            color: #666;
-            padding: 5px;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'PingFang SC', 'Noto Sans SC', sans-serif; }
+        .scrollbar-thin::-webkit-scrollbar { width: 4px; }
+        .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+        .scrollbar-thin::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 2px; }
+        .typing-dot { animation: typingDot 1.4s ease-in-out infinite; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingDot { 0%, 60%, 100% { transform: translateY(0); opacity: 0.4; } 30% { transform: translateY(-4px); opacity: 1; } }
+        code[class*="language-"] { font-family: 'SF Mono', 'Consolas', 'Monaco', monospace; font-size: 13px; line-height: 1.5; }
+        pre[class*="language-"] { margin: 0; }
+        .code-block:hover .copy-btn, .code-block:hover .save-btn { opacity: 1; }
+        .copy-btn, .save-btn { opacity: 0; transition: opacity 0.2s; }
+        .orb-glow { animation: orbGlow 4s ease-in-out infinite; }
+        .orb-thinking { animation: orbRotate 3s linear infinite, orbGlowThinking 2s ease-in-out infinite; }
+        @keyframes orbGlow { 0%,100% { box-shadow: 0 0 20px rgba(255,255,255,0.15); } 50% { box-shadow: 0 0 30px rgba(255,255,255,0.25); } }
+        @keyframes orbRotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes orbGlowThinking { 0%,100% { box-shadow: 0 0 20px rgba(59,130,246,0.3); } 50% { box-shadow: 0 0 40px rgba(59,130,246,0.5); } }
+        .sidebar-item:hover { background: rgba(59, 130, 246, 0.1); }
+        .sidebar-item.active { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+        .cursor-blink::after { content: '▌'; animation: blink 1s infinite; margin-left: 2px; opacity: 0.6; }
+        @keyframes blink { 0%,50% { opacity: 0.6; } 51%,100% { opacity: 0; } }
+        .message-content p { margin: 0; }
+        .message-content p + p { margin-top: 0.75em; }
+        .tab-btn.active { color: #3b82f6; }
+        .tab-btn.active svg { color: #3b82f6; }
+        .tab-btn { color: #71717a; }
+        .light-mode { background: #fafafa !important; color: #18181b !important; }
+        .light-mode .bg-dark-700 { background: #f4f4f5 !important; }
+        .light-mode .bg-dark-800 { background: #ffffff !important; }
+        .light-mode .bg-dark-900 { background: #fafafa !important; }
+        .light-mode .border-dark-600 { border-color: #e4e4e7 !important; }
+        .light-mode .text-white { color: #18181b !important; }
+        .light-mode .text-gray-400 { color: #71717a !important; }
+        .light-mode .text-gray-500 { color: #a1a1aa !important; }
+        .light-mode .sidebar-item:hover { background: #f4f4f5; }
+        .light-mode .sidebar-item.active { background: #eff6ff; color: #2563eb; }
+        .light-mode .tab-btn { color: #a1a1aa; }
+        .light-mode .tab-btn.active { color: #2563eb; }
+        .page { display: none; }
+        .page.active { display: flex; }
+        .card-hover { transition: all 0.2s ease; }
+        .card-hover:hover { transform: translateY(-2px); }
+        .knowledge-card { transition: all 0.3s ease; }
+        .knowledge-card:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .category-chip { transition: all 0.2s ease; }
+        .category-chip.active { background: #3b82f6; color: white; }
+        .shake { animation: shake 0.5s ease-in-out; }
+        @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body>
-    <div class="header">
-        <h1>希望AI V20.0</h1>
+<body class="bg-dark-900 text-white h-screen flex flex-col overflow-hidden">
+
+    <div class="flex-1 flex flex-col overflow-hidden relative">
+
+        <div id="chatPage" class="page active flex-col h-full">
+            <div class="flex-1 flex overflow-hidden">
+                <aside id="sidebar" class="w-0 bg-dark-800 border-r border-dark-600 flex flex-col transition-all duration-300 overflow-hidden z-20 md:w-72">
+                    <div class="p-4 border-b border-dark-600">
+                        <button onclick="newChat()" class="w-full flex items-center justify-center gap-2 py-2.5 bg-primary hover:bg-primary/90 rounded-xl text-sm font-medium transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" /></svg>
+                            新建对话
+                        </button>
+                    </div>
+                    <div class="flex-1 overflow-y-auto scrollbar-thin py-2" id="chatList"></div>
+                    <div class="border-t border-dark-600 p-3">
+                        <div id="userArea" class="flex items-center gap-3 p-2 rounded-xl hover:bg-dark-700 cursor-pointer transition-colors" onclick="handleUserAreaClick()">
+                            <div id="userAvatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-200 via-white to-gray-300 orb-glow flex items-center justify-center flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                            </div>
+                            <div id="userInfo" class="flex-1 min-w-0">
+                                <div class="text-sm font-medium truncate" id="userName">点击登录</div>
+                                <div class="text-xs text-gray-500" id="userRole">专属账号</div>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </div>
+                    </div>
+                </aside>
+
+                <!-- 登录/注册模态框 -->
+                <div id="authModal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4">
+                    <div class="bg-dark-800 rounded-2xl w-full max-w-md p-6 border border-dark-600 animate-pop-in">
+                        <div class="flex justify-between items-center mb-6">
+                            <h2 class="text-xl font-bold" id="authTitle">登录专属账号</h2>
+                            <button onclick="closeAuthModal()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                            </button>
+                        </div>
+                        
+                        <div id="authError" class="hidden mb-4 p-3 bg-danger/20 border border-danger/30 rounded-xl text-danger text-sm"></div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">用户名</label>
+                                <input type="text" id="authUsername" placeholder="输入用户名" 
+                                    class="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-xl focus:outline-none focus:border-primary transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-2">密码</label>
+                                <input type="password" id="authPassword" placeholder="输入密码" 
+                                    class="w-full px-4 py-3 bg-dark-700 border border-dark-600 rounded-xl focus:outline-none focus:border-primary transition-colors">
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 flex gap-3">
+                            <button onclick="handleAuth()" id="authBtn" class="flex-1 py-3 bg-primary hover:bg-primary/90 rounded-xl font-medium transition-colors">
+                                登录
+                            </button>
+                            <button onclick="toggleAuthMode()" id="authToggleBtn" class="px-6 py-3 bg-dark-700 hover:bg-dark-600 rounded-xl font-medium transition-colors">
+                                注册
+                            </button>
+                        </div>
+                        
+                        <p class="mt-4 text-center text-xs text-gray-500" id="authHint">还没有账号？点击「注册」创建专属账号</p>
+                    </div>
+                </div>
+
+                <div id="overlay" class="fixed inset-0 bg-black/50 z-10 hidden md:hidden" onclick="toggleSidebar()"></div>
+
+                <div class="flex-1 flex flex-col min-w-0">
+                    <header class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-900/80 backdrop-blur-sm z-10">
+                        <div class="flex items-center gap-3">
+                            <button onclick="toggleSidebar()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors md:hidden">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /></svg>
+                            </button>
+                            <div class="w-9 h-9 rounded-full bg-gradient-to-br from-white via-gray-200 to-gray-400 orb-glow flex items-center justify-center">
+                                <span class="text-dark-800 text-sm font-bold">H</span>
+                            </div>
+                            <div>
+                                <h1 class="text-base font-semibold">希望AI V20</h1>
+                                <p class="text-xs text-gray-500" id="chatTitle">新对话</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="toggleTheme()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors" title="切换主题">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" id="themeIcon"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                            </button>
+                            <button onclick="showQuickCommands()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors" title="快捷指令">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                            </button>
+                            <button onclick="copyAllMessages()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors" title="复制全部对话">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" /></svg>
+                            </button>
+                            <button onclick="exportMarkdown()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors" title="导出 MD">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                            </button>
+                        </div>
+                    </header>
+
+                    <main class="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin" id="chatArea">
+                        <div class="flex justify-center py-4">
+                            <div id="orb" class="w-16 h-16 rounded-full bg-gradient-to-br from-white via-gray-200 to-gray-400 orb-glow relative">
+                                <div class="absolute top-2 left-4 w-4 h-2.5 bg-white/80 rounded-full rotate-[-30deg]"></div>
+                            </div>
+                        </div>
+                        <div class="text-center text-gray-500 text-sm">
+                            <p class="font-medium text-white mb-1">欢迎使用希望AI</p>
+                            <p class="text-xs">由"希望——清"创造 · 有点毒舌但靠谱</p>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 max-w-md mx-auto mt-6">
+                            <button onclick="sendQuickCmd('给我讲一个冷知识')" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                                <div class="text-lg mb-1">📚</div>
+                                <div class="font-medium">冷知识</div>
+                                <div class="text-gray-500 text-xs mt-0.5">随机涨知识</div>
+                            </button>
+                            <button onclick="startGuessNumber()" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                                <div class="text-lg mb-1">🎮</div>
+                                <div class="font-medium">猜数字</div>
+                                <div class="text-gray-500 text-xs mt-0.5">休闲小游戏</div>
+                            </button>
+                            <button onclick="startIdiomGame()" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                                <div class="text-lg mb-1">🀄</div>
+                                <div class="font-medium">成语接龙</div>
+                                <div class="text-gray-500 text-xs mt-0.5">文字游戏</div>
+                            </button>
+                            <button onclick="sendQuickCmd('讲个笑话')" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                                <div class="text-lg mb-1">😂</div>
+                                <div class="font-medium">讲笑话</div>
+                                <div class="text-gray-500 text-xs mt-0.5">开心一下</div>
+                            </button>
+                        </div>
+                    </main>
+
+                    <div id="quickCmds" class="hidden px-4 pb-2 border-t border-dark-600 pt-3 bg-dark-800/50">
+                        <div class="text-xs text-gray-500 mb-2">快捷指令</div>
+                        <div class="flex gap-2 overflow-x-auto scrollbar-thin pb-1">
+                            <button onclick="sendQuickCmd('给我讲一个冷知识')" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">📚 冷知识</button>
+                            <button onclick="startGuessNumber()" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">🎮 猜数字</button>
+                            <button onclick="startIdiomGame()" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">🀄 成语接龙</button>
+                            <button onclick="sendQuickCmd('讲个笑话')" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">😂 讲笑话</button>
+                            <button onclick="sendQuickCmd('帮我写首诗')" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">✍️ 写诗</button>
+                            <button onclick="sendQuickCmd('今天运气怎么样')" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">🍀 今日运势</button>
+                            <button onclick="randomKnowledge()" class="flex-shrink-0 px-3 py-1.5 bg-dark-700 hover:bg-dark-600 rounded-full text-xs whitespace-nowrap transition-colors">🎲 随机知识</button>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-dark-600 bg-dark-900/90 backdrop-blur-sm p-3">
+                        <div class="flex items-end gap-2">
+                            <button onclick="document.getElementById('imageInput').click()" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-700 hover:bg-dark-600 text-gray-400 hover:text-white transition-colors flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                            </button>
+                            <input type="file" id="imageInput" accept="image/*" class="hidden" onchange="handleImageUpload(this)">
+                            <button onclick="toggleVoiceInput()" id="voiceBtn" class="w-10 h-10 flex items-center justify-center rounded-full bg-dark-700 hover:bg-dark-600 text-gray-400 hover:text-white transition-colors flex-shrink-0" title="语音输入">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                            </button>
+                            <div class="flex-1 relative">
+                                <textarea id="messageInput" rows="1" placeholder="输入消息..." class="w-full bg-dark-700 border border-dark-600 rounded-2xl px-4 py-3 text-sm resize-none focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all" oninput="autoResize(this)"></textarea>
+                            </div>
+                            <button onclick="sendMessage()" id="sendBtn" class="w-10 h-10 flex items-center justify-center rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg shadow-primary/30 transition-all active:scale-95 flex-shrink-0">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" /></svg>
+                            </button>
+                        </div>
+                        <div class="flex justify-center mt-2">
+                            <span class="text-xs text-gray-500 flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                                在线 · <span id="todayCount">0</span> 次对话
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="discoverPage" class="page flex-col h-full overflow-hidden">
+            <header class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-900/80 backdrop-blur-sm z-10 flex-shrink-0">
+                <div>
+                    <h1 class="text-lg font-bold">发现</h1>
+                    <p class="text-xs text-gray-500">探索更多有趣内容</p>
+                </div>
+                <button onclick="toggleTheme()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto px-4 py-4 space-y-6 scrollbar-thin">
+                <div class="bg-gradient-to-br from-primary/20 to-secondary/20 rounded-2xl p-5 border border-primary/30">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-12 h-12 rounded-xl bg-primary/30 flex items-center justify-center text-2xl">🎲</div>
+                        <div>
+                            <h2 class="font-bold">每日冷知识</h2>
+                            <p class="text-xs text-gray-400">每天学点新知识</p>
+                        </div>
+                    </div>
+                    <div id="dailyKnowledge" class="bg-dark-800/60 rounded-xl p-3 text-sm">
+                        <p class="text-gray-300">点击下方按钮，随机获取一条冷知识！</p>
+                    </div>
+                    <button onclick="dailyRandomKnowledge()" class="w-full mt-3 py-2.5 bg-primary hover:bg-primary/90 rounded-xl text-sm font-medium transition-colors">
+                        🎲 随机一条
+                    </button>
+                </div>
+
+                <div>
+                    <h2 class="font-bold mb-3 flex items-center gap-2">
+                        <span>✨</span> 技能中心
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3" id="skillGrid">
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="font-bold mb-3 flex items-center gap-2">
+                        <span>🎮</span> 趣味游戏
+                    </h2>
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="openDebateArena()" class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 hover:from-purple-500/30 hover:to-pink-500/30 rounded-2xl p-4 text-left transition-all card-hover border border-purple-500/30">
+                            <div class="text-3xl mb-2">⚔️</div>
+                            <div class="font-medium text-sm">AI 辩论擂台</div>
+                            <div class="text-xs text-gray-400 mt-1">两个AI神仙打架</div>
+                        </button>
+                        <button onclick="startGuessNumber(); switchTab('chat')" class="bg-dark-800 hover:bg-dark-700 rounded-2xl p-4 text-left transition-all card-hover border border-dark-600">
+                            <div class="text-3xl mb-2">🔢</div>
+                            <div class="font-medium text-sm">猜数字</div>
+                            <div class="text-xs text-gray-500 mt-1">1-100，10次机会</div>
+                        </button>
+                        <button onclick="startIdiomGame(); switchTab('chat')" class="bg-dark-800 hover:bg-dark-700 rounded-2xl p-4 text-left transition-all card-hover border border-dark-600">
+                            <div class="text-3xl mb-2">🀄</div>
+                            <div class="font-medium text-sm">成语接龙</div>
+                            <div class="text-xs text-gray-500 mt-1">看谁接得多</div>
+                        </button>
+                        <button onclick="startTriviaGame()" class="bg-dark-800 hover:bg-dark-700 rounded-2xl p-4 text-left transition-all card-hover border border-dark-600">
+                            <div class="text-3xl mb-2">❓</div>
+                            <div class="font-medium text-sm">知识问答</div>
+                            <div class="text-xs text-gray-500 mt-1">考验你的知识库</div>
+                        </button>
+                        <button onclick="sendQuickCmd('讲个笑话'); switchTab('chat')" class="bg-dark-800 hover:bg-dark-700 rounded-2xl p-4 text-left transition-all card-hover border border-dark-600">
+                            <div class="text-3xl mb-2">😂</div>
+                            <div class="font-medium text-sm">讲笑话</div>
+                            <div class="text-xs text-gray-500 mt-1">开心一刻</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="font-bold mb-3 flex items-center gap-2">
+                        <span>📚</span> 知识分类
+                    </h2>
+                    <div class="flex gap-2 overflow-x-auto scrollbar-thin pb-2 mb-3">
+                        <button onclick="filterKnowledge('all')" class="category-chip active flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="all">全部</button>
+                        <button onclick="filterKnowledge('nature')" class="category-chip flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="nature">🌿 自然科学</button>
+                        <button onclick="filterKnowledge('tech')" class="category-chip flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="tech">💻 科技数码</button>
+                        <button onclick="filterKnowledge('history')" class="category-chip flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="history">📜 历史人文</button>
+                        <button onclick="filterKnowledge('life')" class="category-chip flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="life">🌱 生活冷知识</button>
+                        <button onclick="filterKnowledge('animal')" class="category-chip flex-shrink-0 px-4 py-2 bg-dark-700 rounded-full text-xs font-medium" data-cat="animal">🐾 动物世界</button>
+                    </div>
+                    <div id="knowledgeGrid" class="space-y-3">
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="font-bold mb-3 flex items-center gap-2">
+                        <span>⚡</span> 快捷指令
+                    </h2>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="sendQuickCmd('帮我写首诗'); switchTab('chat')" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-xl text-xs text-left transition-colors border border-dark-600">
+                            <div class="font-medium">✍️ 帮我写诗</div>
+                        </button>
+                        <button onclick="sendQuickCmd('今天运气怎么样'); switchTab('chat')" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-xl text-xs text-left transition-colors border border-dark-600">
+                            <div class="font-medium">🍀 今日运势</div>
+                        </button>
+                        <button onclick="sendQuickCmd('帮我写个Python程序'); switchTab('chat')" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-xl text-xs text-left transition-colors border border-dark-600">
+                            <div class="font-medium">🐍 Python代码</div>
+                        </button>
+                        <button onclick="sendQuickCmd('帮我写个前端页面'); switchTab('chat')" class="p-3 bg-dark-800 hover:bg-dark-700 rounded-xl text-xs text-left transition-colors border border-dark-600">
+                            <div class="font-medium">🎨 前端开发</div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="h-4"></div>
+            </main>
+        </div>
+
+        <div id="debatePage" class="page flex-col h-full overflow-hidden">
+            <header class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-900/80 backdrop-blur-sm z-10 flex-shrink-0">
+                <button onclick="closeDebateArena()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors -ml-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="text-center">
+                    <h1 class="text-lg font-bold">⚔️ AI 辩论擂台</h1>
+                    <p class="text-xs text-gray-500" id="debateStatus">准备开始</p>
+                </div>
+                <button onclick="toggleTheme()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors -mr-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-hidden flex flex-col">
+                <div id="debateSetup" class="flex-1 overflow-y-auto px-4 py-4 space-y-5 scrollbar-thin">
+                    <div class="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl p-5 border border-purple-500/30">
+                        <div class="flex items-center gap-3 mb-2">
+                            <div class="text-3xl">⚔️</div>
+                            <div>
+                                <h2 class="font-bold text-lg">AI 辩论擂台</h2>
+                                <p class="text-xs text-gray-400">两个AI神仙打架，你当裁判</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium mb-2 block">📝 辩题</label>
+                        <textarea id="debateTopic" rows="3" placeholder="输入辩题，比如：AI 会取代人类程序员吗？"
+                            class="w-full bg-dark-700 border border-dark-600 rounded-xl p-3 text-sm focus:outline-none focus:border-primary resize-none"></textarea>
+                        <div class="flex flex-wrap gap-2 mt-2">
+                            <button onclick="setDebateTopic('AI 会取代人类程序员吗？')" class="text-xs px-3 py-1 bg-dark-700 hover:bg-dark-600 rounded-full transition-colors">AI 取代程序员？</button>
+                            <button onclick="setDebateTopic('科技让人更孤独了吗？')" class="text-xs px-3 py-1 bg-dark-700 hover:bg-dark-600 rounded-full transition-colors">科技让人孤独？</button>
+                            <button onclick="setDebateTopic('躺平是年轻人的毒药还是解药？')" class="text-xs px-3 py-1 bg-dark-700 hover:bg-dark-600 rounded-full transition-colors">躺平是好是坏？</button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="bg-dark-800 rounded-2xl p-4 border border-dark-600">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-lg">🔵</div>
+                                <div>
+                                    <div class="font-medium text-sm">正方</div>
+                                    <div class="text-xs text-gray-500">理性派</div>
+                                </div>
+                            </div>
+                            <select id="debateSideA" class="w-full bg-dark-700 border border-dark-600 rounded-lg p-2 text-xs focus:outline-none focus:border-primary">
+                                <option value="rational">理性逻辑派</option>
+                                <option value="optimistic">乐观积极派</option>
+                                <option value="tech">科技支持者</option>
+                                <option value="conservative">保守传统派</option>
+                            </select>
+                        </div>
+                        <div class="bg-dark-800 rounded-2xl p-4 border border-dark-600">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center text-lg">🔴</div>
+                                <div>
+                                    <div class="font-medium text-sm">反方</div>
+                                    <div class="text-xs text-gray-500">感性派</div>
+                                </div>
+                            </div>
+                            <select id="debateSideB" class="w-full bg-dark-700 border border-dark-600 rounded-lg p-2 text-xs focus:outline-none focus:border-primary">
+                                <option value="emotional">感性人文派</option>
+                                <option value="pessimistic">悲观现实派</option>
+                                <option value="skeptic">怀疑论者</option>
+                                <option value="rebel">叛逆反对派</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium mb-2 block">🔄 辩论轮数</label>
+                        <div class="flex gap-2">
+                            <button onclick="setDebateRounds(3)" class="rounds-btn flex-1 py-2 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors border border-dark-600" data-rounds="3">3 轮</button>
+                            <button onclick="setDebateRounds(5)" class="rounds-btn flex-1 py-2 bg-primary hover:bg-primary/90 rounded-xl text-sm transition-colors border border-primary" data-rounds="5">5 轮</button>
+                            <button onclick="setDebateRounds(7)" class="rounds-btn flex-1 py-2 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors border border-dark-600" data-rounds="7">7 轮</button>
+                        </div>
+                    </div>
+
+                    <button onclick="startDebate()" id="startDebateBtn"
+                        class="w-full py-3.5 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20">
+                        🚀 开始辩论
+                    </button>
+                </div>
+
+                <div id="debateArena" class="flex-1 overflow-hidden flex-col hidden">
+                    <div class="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin" id="debateMessages">
+                    </div>
+                    <div class="p-3 border-t border-dark-600 bg-dark-900/80 backdrop-blur-sm flex gap-2">
+                        <button onclick="pauseDebate()" id="pauseDebateBtn" class="flex-1 py-2.5 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors">
+                            ⏸️ 暂停
+                        </button>
+                        <button onclick="endDebateEarly()" class="flex-1 py-2.5 bg-danger/20 hover:bg-danger/30 text-danger rounded-xl text-sm transition-colors">
+                            ⏹️ 结束
+                        </button>
+                    </div>
+                </div>
+
+                <div id="debateResult" class="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin hidden">
+                    <div class="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 rounded-2xl p-5 border border-yellow-500/30 text-center">
+                        <div class="text-4xl mb-2">🏆</div>
+                        <h2 class="font-bold text-lg">辩论结束！</h2>
+                        <p class="text-xs text-gray-400 mt-1">裁判大人，请投票</p>
+                    </div>
+
+                    <div id="debateSummary" class="bg-dark-800 rounded-2xl p-4 border border-dark-600">
+                        <div class="font-medium mb-2 flex items-center gap-2">
+                            <span>📊</span> 裁判总结
+                        </div>
+                        <div id="summaryContent" class="text-sm text-gray-300">
+                            正在生成总结...
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="voteForA()" id="voteABtn" class="bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 rounded-2xl p-4 transition-all">
+                            <div class="text-2xl mb-1">🔵</div>
+                            <div class="font-medium text-sm">正方胜</div>
+                            <div class="text-xs text-gray-400 mt-1" id="voteACount">0 票</div>
+                        </button>
+                        <button onclick="voteForB()" id="voteBBtn" class="bg-red-500/20 hover:bg-red-500/30 border border-red-500/30 rounded-2xl p-4 transition-all">
+                            <div class="text-2xl mb-1">🔴</div>
+                            <div class="font-medium text-sm">反方胜</div>
+                            <div class="text-xs text-gray-400 mt-1" id="voteBCount">0 票</div>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="restartDebate()" class="py-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors">
+                            🔄 再来一局
+                        </button>
+                        <button onclick="closeDebateArena()" class="py-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors">
+                            🏠 返回发现
+                        </button>
+                    </div>
+                </div>
+            </main>
+        </div>
+
+        <div id="profilePage" class="page flex-col h-full overflow-hidden">
+            <header class="flex items-center justify-between px-4 py-3 border-b border-dark-600 bg-dark-900/80 backdrop-blur-sm z-10 flex-shrink-0">
+                <h1 class="text-lg font-bold">我的</h1>
+                <button onclick="toggleTheme()" class="p-2 hover:bg-dark-700 rounded-lg transition-colors">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg>
+                </button>
+            </header>
+
+            <main class="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin">
+                <div class="bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl p-5 border border-primary/30">
+                    <div class="flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-full bg-gradient-to-br from-white via-gray-200 to-gray-400 orb-glow flex items-center justify-center flex-shrink-0">
+                            <span class="text-dark-800 text-xl font-bold">清</span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <h2 class="text-lg font-bold">希望——清</h2>
+                            <p class="text-xs text-gray-400">希望AI V20.0 创造者</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="px-2 py-0.5 bg-primary/30 text-primary rounded-full text-xs">V20.0</span>
+                                <span class="px-2 py-0.5 bg-accent/30 text-accent rounded-full text-xs">双脑协同</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-4 gap-2">
+                    <div class="bg-dark-800 rounded-xl p-3 text-center border border-dark-600">
+                        <div class="text-xl font-bold text-primary" id="profileTotalChats">0</div>
+                        <div class="text-xs text-gray-500 mt-1">总对话</div>
+                    </div>
+                    <div class="bg-dark-800 rounded-xl p-3 text-center border border-dark-600">
+                        <div class="text-xl font-bold text-accent" id="profileToday">0</div>
+                        <div class="text-xs text-gray-500 mt-1">今日</div>
+                    </div>
+                    <div class="bg-dark-800 rounded-xl p-3 text-center border border-dark-600">
+                        <div class="text-xl font-bold text-warning" id="profileTotalMsgs">0</div>
+                        <div class="text-xs text-gray-500 mt-1">总消息</div>
+                    </div>
+                    <div class="bg-dark-800 rounded-xl p-3 text-center border border-dark-600">
+                        <div class="text-xl font-bold text-purple-400" id="profileExpCount">0</div>
+                        <div class="text-xs text-gray-500 mt-1">经验</div>
+                    </div>
+                </div>
+
+                <div class="bg-dark-800 rounded-2xl overflow-hidden border border-dark-600">
+                    <div class="px-4 py-3 border-b border-dark-600">
+                        <h3 class="font-medium text-sm">⚙️ 设置</h3>
+                    </div>
+                    <div class="divide-y divide-dark-600">
+                        <button onclick="openSettings()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🎭</span>
+                                <span class="text-sm">AI 人设</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <span class="text-xs" id="profilePersonality">毒舌工程师</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </button>
+                        <button onclick="openSettings()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🌡️</span>
+                                <span class="text-sm">创造力</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <span class="text-xs" id="profileTemp">0.7</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </button>
+                        <button onclick="openSettings()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🧠</span>
+                                <span class="text-sm">双脑协同</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-gray-400">
+                                <span class="text-xs" id="profileDualBrain">已开启</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                            </div>
+                        </button>
+                        <button onclick="toggleTheme()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">🌙</span>
+                                <span class="text-sm">深色模式</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="themeToggle" class="sr-only peer" onchange="toggleTheme()">
+                                    <div class="w-9 h-5 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary"></div>
+                                </label>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark-800 rounded-2xl overflow-hidden border border-dark-600">
+                    <div class="px-4 py-3 border-b border-dark-600">
+                        <h3 class="font-medium text-sm">📊 数据</h3>
+                    </div>
+                    <div class="divide-y divide-dark-600">
+                        <button onclick="exportMarkdown()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">📝</span>
+                                <span class="text-sm">导出对话为 MD</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                        <button onclick="copyAllMessages()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">📋</span>
+                                <span class="text-sm">复制全部对话</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                        <button onclick="showStats()" class="w-full flex items-center justify-between px-4 py-3 hover:bg-dark-700 transition-colors">
+                            <div class="flex items-center gap-3">
+                                <span class="text-lg">📈</span>
+                                <span class="text-sm">详细统计</span>
+                            </div>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-dark-800 rounded-2xl overflow-hidden border border-dark-600">
+                    <div class="px-4 py-3 border-b border-dark-600">
+                        <h3 class="font-medium text-sm">ℹ️ 关于</h3>
+                    </div>
+                    <div class="divide-y divide-dark-600">
+                        <div class="flex items-center justify-between px-4 py-3">
+                            <span class="text-sm text-gray-400">版本</span>
+                            <span class="text-sm">V20.0</span>
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-3">
+                            <span class="text-sm text-gray-400">知识库</span>
+                            <span class="text-sm"><span id="profileKBCount">0</span> 条</span>
+                        </div>
+                        <div class="flex items-center justify-between px-4 py-3">
+                            <span class="text-sm text-gray-400">创造者</span>
+                            <span class="text-sm">希望——清</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="clearAllData()" class="w-full py-3 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-2xl text-sm font-medium transition-colors border border-red-500/20">
+                    🗑️ 清空所有数据
+                </button>
+
+                <div class="h-4"></div>
+            </main>
+        </div>
+
+        <nav class="border-t border-dark-600 bg-dark-900/95 backdrop-blur-sm flex-shrink-0 pb-safe">
+            <div class="flex items-center justify-around py-1">
+                <button onclick="switchTab('chat')" class="tab-btn active flex flex-col items-center gap-0.5 py-2 px-4 transition-colors" data-tab="chat">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                    <span class="text-xs">聊天</span>
+                </button>
+                <button onclick="switchTab('discover')" class="tab-btn flex flex-col items-center gap-0.5 py-2 px-4 transition-colors" data-tab="discover">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+                    <span class="text-xs">发现</span>
+                </button>
+                <button onclick="switchTab('profile')" class="tab-btn flex flex-col items-center gap-0.5 py-2 px-4 transition-colors" data-tab="profile">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    <span class="text-xs">我的</span>
+                </button>
+            </div>
+        </nav>
     </div>
 
-    <div class="orb-container">
-        <div id="orb"></div>
-    </div>
-
-    <div class="chat-area" id="chatArea">
-        <div class="message system">
-            [系统] 欢迎使用希望AI V20.0。我是通用助手，有问题尽管问。代码相关需求我会启动双脑协同。
+    <div id="settingsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 rounded-2xl w-full max-w-md border border-dark-600 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-dark-600">
+                <h3 class="font-medium">设置</h3>
+                <button onclick="closeSettings()" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-5 overflow-y-auto scrollbar-thin flex-1">
+                <div>
+                    <label class="text-sm text-gray-400 mb-2 block">AI 人设</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="setPersonality('default')" class="personality-btn p-3 rounded-xl border border-primary bg-primary/10 text-left" data-p="default">
+                            <div class="font-medium text-sm">😎 毒舌工程师</div>
+                            <div class="text-xs text-gray-400 mt-1">默认 · 靠谱又傲娇</div>
+                        </button>
+                        <button onclick="setPersonality('gentle')" class="personality-btn p-3 rounded-xl border border-dark-600 hover:border-dark-500 text-left" data-p="gentle">
+                            <div class="font-medium text-sm">🌸 温柔学姐</div>
+                            <div class="text-xs text-gray-400 mt-1">耐心 · 细致温暖</div>
+                        </button>
+                        <button onclick="setPersonality('professor')" class="personality-btn p-3 rounded-xl border border-dark-600 hover:border-dark-500 text-left" data-p="professor">
+                            <div class="font-medium text-sm">🎓 老教授</div>
+                            <div class="text-xs text-gray-400 mt-1">严谨 · 知识渊博</div>
+                        </button>
+                        <button onclick="setPersonality('funny')" class="personality-btn p-3 rounded-xl border border-dark-600 hover:border-dark-500 text-left" data-p="funny">
+                            <div class="font-medium text-sm">🤡 段子手</div>
+                            <div class="text-xs text-gray-400 mt-1">搞笑 · 满嘴跑火车</div>
+                        </button>
+                    </div>
+                </div>
+                <div class="pt-3 border-t border-dark-600">
+                    <label class="text-sm text-gray-400 mb-2 block">创造力 (Temperature: <span id="tempLabel">0.7</span>)</label>
+                    <input type="range" id="tempSlider" min="0" max="1" step="0.1" value="0.7" class="w-full accent-primary" oninput="updateTempLabel()">
+                    <p class="text-xs text-gray-500 mt-1">越低越稳定，越高越有创意</p>
+                </div>
+                <div class="pt-3 border-t border-dark-600">
+                    <label class="text-sm text-gray-400 mb-2 block">上下文窗口: <span id="contextLabel">15轮</span></label>
+                    <input type="range" id="contextSlider" min="5" max="30" step="5" value="15" class="w-full accent-primary" oninput="updateContextLabel()">
+                    <p class="text-xs text-gray-500 mt-1">保留多少轮对话记忆</p>
+                </div>
+                <div class="pt-3 border-t border-dark-600 flex items-center justify-between">
+                    <span class="text-sm">流式输出</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="streamToggle" checked class="sr-only peer">
+                        <div class="w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+                <div class="pt-3 border-t border-dark-600 flex items-center justify-between">
+                    <span class="text-sm">代码双脑协同</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="dualBrainToggle" checked class="sr-only peer" onchange="updateProfileDualBrain()">
+                        <div class="w-11 h-6 bg-dark-600 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                </div>
+                <div class="pt-3 border-t border-dark-600">
+                    <button onclick="clearAllData()" class="w-full py-2.5 bg-red-500/10 text-red-400 hover:bg-red-500/20 rounded-xl text-sm font-medium transition-colors">
+                        清空所有数据
+                    </button>
+                </div>
+            </div>
+            <div class="p-4 border-t border-dark-600">
+                <button onclick="closeSettings()" class="w-full py-2.5 bg-primary hover:bg-primary/90 rounded-xl text-sm font-medium transition-colors">完成</button>
+            </div>
         </div>
     </div>
 
-    <div class="input-area">
-        <input type="text" id="messageInput" placeholder="输入消息..." autocomplete="off">
-        <button id="sendBtn" onclick="sendMessage()">发送</button>
+    <div id="statsModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 rounded-2xl w-full max-w-sm border border-dark-600 shadow-2xl overflow-hidden">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-dark-600">
+                <h3 class="font-medium">📊 对话统计</h3>
+                <button onclick="closeStats()" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="bg-dark-700 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-primary" id="statTotalChats">0</div>
+                        <div class="text-xs text-gray-400 mt-1">总对话数</div>
+                    </div>
+                    <div class="bg-dark-700 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-accent" id="statToday">0</div>
+                        <div class="text-xs text-gray-400 mt-1">今日对话</div>
+                    </div>
+                    <div class="bg-dark-700 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-yellow-500" id="statTotalMsgs">0</div>
+                        <div class="text-xs text-gray-400 mt-1">总消息数</div>
+                    </div>
+                    <div class="bg-dark-700 rounded-xl p-3 text-center">
+                        <div class="text-2xl font-bold text-pink-500" id="statKB">0</div>
+                        <div class="text-xs text-gray-400 mt-1">知识库命中</div>
+                    </div>
+                </div>
+                <div class="bg-dark-700 rounded-xl p-3">
+                    <div class="text-sm text-gray-400 mb-2">当前人设</div>
+                    <div class="font-medium" id="statPersonality">毒舌工程师</div>
+                </div>
+                <div class="bg-dark-700 rounded-xl p-3">
+                    <div class="text-sm text-gray-400 mb-2">知识库条目</div>
+                    <div class="font-medium"><span id="statKBCount">0</span> 条冷知识</div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-dark-600">
+                <button onclick="closeStats()" class="w-full py-2.5 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm font-medium transition-colors">关闭</button>
+            </div>
+        </div>
     </div>
 
-    <div class="status" id="status"></div>
+    <div id="triviaModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-dark-800 rounded-2xl w-full max-w-md border border-dark-600 shadow-2xl overflow-hidden max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between px-4 py-3 border-b border-dark-600">
+                <h3 class="font-medium">❓ 知识问答</h3>
+                <button onclick="closeTrivia()" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+            </div>
+            <div class="p-4 space-y-4 overflow-y-auto scrollbar-thin flex-1">
+                <div class="flex items-center justify-between">
+                    <span class="text-sm text-gray-400">第 <span id="triviaNum">1</span> 题</span>
+                    <span class="text-sm text-primary">得分: <span id="triviaScore">0</span></span>
+                </div>
+                <div class="bg-dark-700 rounded-xl p-4">
+                    <div class="text-xs text-gray-400 mb-2" id="triviaCategory">自然科学</div>
+                    <div class="font-medium" id="triviaQuestion">问题加载中...</div>
+                </div>
+                <div id="triviaOptions" class="space-y-2">
+                </div>
+                <div id="triviaResult" class="hidden bg-dark-700 rounded-xl p-4">
+                    <div class="font-medium mb-2" id="triviaResultTitle">回答正确！</div>
+                    <div class="text-sm text-gray-400" id="triviaResultDesc">答案解析...</div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-dark-600 flex gap-2">
+                <button onclick="closeTrivia()" class="flex-1 py-2.5 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm font-medium transition-colors">退出</button>
+                <button onclick="nextTrivia()" id="triviaNextBtn" class="flex-1 py-2.5 bg-primary hover:bg-primary/90 rounded-xl text-sm font-medium transition-colors hidden">下一题</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toastContainer" class="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex flex-col gap-2 items-center"></div>
 
     <script>
         const chatArea = document.getElementById('chatArea');
         const messageInput = document.getElementById('messageInput');
         const sendBtn = document.getElementById('sendBtn');
-        const orb = document.getElementById('orb');
-        const status = document.getElementById('status');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const chatList = document.getElementById('chatList');
+        const chatTitle = document.getElementById('chatTitle');
 
-        const _p1 = 'cfut_2DxH6';
-        const _p2 = 'ROGyns3F';
-        const _p3 = 'ydTB9W5H';
-        const _p4 = '4ojy2jSP';
-        const _p5 = 'XZkhJc7B';
-        const _p6 = 'mkve0fc1';
-        const _p7 = '6d0';
-        const CF_API_TOKEN = _p1 + _p2 + _p3 + _p4 + _p5 + _p6 + _p7;
+        const API_ENDPOINT = '/chat';
+        let conversations = {};
+        let currentChatId = null;
+        let knowledgeBase = [];
+        let knowledgeCategories = {};
+        let currentKnowledgeCategory = 'all';
+        let searchContext = '';
+        let isLoading = false;
+        let gameState = null;
+        let kbHits = 0;
+        let triviaState = null;
+        let skills = [];
+        let skillCategories = {};
+        let activeSkill = null;
 
-        const _q1 = '1e7b892c22';
-        const _q2 = 'baf028143a7';
-        const _q3 = '79abec2e278';
-        const CF_ACCOUNT_ID = _q1 + _q2 + _q3;
+        // 用户认证状态
+        let currentUser = null;
+        let isRegisterMode = false;
 
-        const _m1 = '@cf/ope';
-        const _m2 = 'nai/gp';
-        const _m3 = 't-oss-1';
-        const _m4 = '20b';
-        const CF_MODEL = _m1 + _m2 + _m3 + _m4;
+        const IDIOMS = [
+            '春风得意', '意气风发', '发愤图强', '强词夺理', '理直气壮', '壮志凌云', '云开见日', '日新月异',
+            '异想天开', '开门见山', '山穷水尽', '尽心尽力', '力不从心', '心想事成', '成千上万', '万众一心',
+            '心旷神怡', '怡然自得', '得意洋洋', '洋洋得意', '一见钟情', '情深似海', '海阔天空', '空前绝后',
+            '后顾之忧', '忧心忡忡', '虎头蛇尾', '尾大不掉', '掉以轻心', '心花怒放', '放虎归山', '山高水长',
+            '长年累月', '月圆花好', '好事多磨', '磨刀霍霍', '霍然而愈', '犹豫不决', '决心已定', '定国安邦',
+            '邦国殄瘁', '瘁心竭力', '力挽狂澜', '澜倒波随', '随心所欲', '欲罢不能', '能屈能伸', '伸张正义',
+            '义不容辞', '辞旧迎新', '新陈代谢', '谢天谢地', '地久天长', '长驱直入', '入木三分', '分秒必争',
+            '争先恐后', '后来居上', '上行下效', '效犬马劳', '劳苦功高', '高瞻远瞩', '瞩目以待', '待人接物',
+            '物以类聚', '聚精会神', '神通广大', '大器晚成', '成竹在胸', '胸有成竹', '竹报平安', '安然无恙',
+            '恙无大碍', '碍手碍脚', '脚踏实地', '地大物博', '博古通今', '今非昔比', '比翼双飞', '飞黄腾达',
+            '达官贵人', '人山人海', '海纳百川', '川流不息', '息息相关', '关怀备至', '至高无上', '上善若水',
+            '水落石出', '出奇制胜', '胜券在握', '握手言和', '和气生财', '财源广进', '进退两难', '难能可贵',
+            '贵人多忘', '忘乎所以', '以德报怨', '怨天尤人', '人才辈出', '出类拔萃', '璀璨夺目', '目不暇接'
+        ];
 
-        const CODE_KEYWORDS = ['代码', '写', '编程', '程序', '函数', 'class', 'def ', 'import ', 'function', 'const ', 'let ', 'var ', 'python', 'javascript', 'java', 'c++', 'html', 'css', 'sql', '算法', 'bug', '错', '写个', '生成', '实现'];
-        const MAX_REVIEW_ROUNDS = 3;
+        const settings = {
+            temperature: 0.7,
+            maxContext: 15,
+            stream: true,
+            dualBrain: true,
+            personality: 'default',
+            theme: 'dark',
+        };
 
-        function isCodeRequest(text) {
-            return CODE_KEYWORDS.some(kw => text.toLowerCase().includes(kw.toLowerCase()));
-        }
+        const stats = {
+            totalChats: 0,
+            totalMsgs: 0,
+            todayChats: 0,
+            lastDate: '',
+        };
 
-        function getChatSystemPrompt() {
-            return '你是一个友好、智能的AI助手，名叫"希望AI"。特点：回答问题清晰准确、知识覆盖广（科学、技术、历史、文化、生活等）、用简洁易懂的语言解释复杂概念、语气自然亲切。请用中文回答。';
-        }
+        const PERSONALITIES = {
+            default: { name: '毒舌工程师', prompt: '有点毒舌但靠谱，幽默自嘲，傲娇但热心。口头禅："兄弟"、"讲真"、"说实话"、"懂？"、"笑死"。多用Emoji，1-2个就好。' },
+            gentle: { name: '温柔学姐', prompt: '温柔耐心的学姐，说话亲切温暖，善解人意，会鼓励人。用"学弟/学妹"称呼对方，语气软乎乎的。多用🌸✨😊之类的emoji。' },
+            professor: { name: '老教授', prompt: '知识渊博的老教授，说话严谨有条理，喜欢用"同学"称呼对方，偶尔引经据典，带点书卷气。解答问题深入浅出，有学者风范。' },
+            funny: { name: '段子手', prompt: '搞笑段子手，说话幽默风趣，爱抖机灵，时不时讲个段子。口头禅："笑死"、"绝了"、"整活"、"离谱"。把严肃的问题用搞笑的方式回答。' },
+        };
 
-        function getCreatorSystemPrompt() {
-            return '你是专业的代码创作者（Creator）。职责：根据用户需求编写高质量可运行的代码。要求：代码必须能直接运行、遵循最佳实践和编码规范、添加必要注释、考虑边界情况和错误处理、代码简洁高效。输出格式：先简短解释思路（1-2句话），然后给出代码（用```代码语言```包裹），最后加一段使用说明。';
-        }
+        const CODE_KEYWORDS = ['代码', '编程', '程序', '函数', '算法', 'bug', '调试', '写代码', '生成代码', '实现代码', 'python', 'javascript', 'java', 'c++', 'c#', 'html', 'css', 'sql', 'rust', 'go', 'php', 'ruby', 'swift', 'kotlin'];
+        const NON_CODE_KEYWORDS = ['作文', '文章', '故事', '小说', '诗', '诗歌', '情书', '信', '邮件', '报告', '总结', '感想', '读后感', '演讲稿', '论文', '日记', '随笔', '翻译', '解释', '介绍', '说明', '推荐', '建议', '评价', '分析', '笑话', '段子', '文案'];
 
-        function getReviewerSystemPrompt() {
-            return '你是严格的代码审查官（Reviewer）。审查维度：Bug和逻辑错误、安全漏洞（SQL注入、XSS、命令注入等）、死循环风险、边界条件处理、代码可读性和规范性、性能问题。输出格式（必须严格遵循，只输出JSON）：{"pass": true, "reason": "代码审查通过"} 或 {"pass": false, "reason": "发现的具体问题描述"}';
-        }
-
-        async function callAI(messages) {
-            const url = 'https://api.cloudflare.com/client/v4/accounts/' + CF_ACCOUNT_ID + '/ai/run/' + CF_MODEL;
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Authorization': 'Bearer ' + CF_API_TOKEN,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ messages, stream: false })
-            });
-
-            if (!response.ok) {
-                throw new Error('API错误 ' + response.status);
-            }
-
-            const data = await response.json();
-            if (!data.success) {
-                throw new Error(data.errors?.[0]?.message || 'AI调用失败');
-            }
-
-            return data.result.choices[0].message.content;
-        }
-
-        function parseReviewResult(text) {
-            try {
-                const match = text.match(/\{[\s\S]*?\}/);
-                if (match) return JSON.parse(match[0]);
-            } catch (e) {}
-            return { pass: true, reason: '解析失败，默认通过' };
-        }
-
-        function scrollToBottom() {
-            setTimeout(() => chatArea.scrollTop = chatArea.scrollHeight, 100);
-        }
-
-        function addMessage(role, content, isTyping) {
-            const div = document.createElement('div');
-            div.className = 'message ' + role;
-            
-            const label = document.createElement('div');
-            label.className = 'label';
-            label.textContent = role === 'user' ? '[你]' : '[希望AI]';
-            
-            const contentDiv = document.createElement('div');
-            contentDiv.className = 'content';
-            
-            if (isTyping) {
-                contentDiv.innerHTML = '<span class="typing-indicator">思考中...</span>';
+        function init() {
+            loadConversations();
+            loadStats();
+            loadSettings();
+            loadUserSession(); // 加载用户登录状态
+            loadKnowledgeBase();
+            loadSkills();
+            loadExperienceLibrary();
+            if (Object.keys(conversations).length === 0) {
+                newChat();
             } else {
-                contentDiv.innerHTML = formatMessage(content);
+                const firstId = Object.keys(conversations)[0];
+                switchChat(firstId);
             }
-            
-            div.appendChild(label);
-            div.appendChild(contentDiv);
-            chatArea.appendChild(div);
-            scrollToBottom();
-            return contentDiv;
+            renderChatList();
+            updateTodayCount();
+            updateProfileStats();
         }
 
-        function formatMessage(text) {
-            text = text.replace(/```(\w+)?\n?([\s\S]*?)```/g, '<code>$2</code>');
-            text = text.replace(/\n/g, '<br>');
+        function switchTab(tab) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(tab + 'Page').classList.add('active');
+            document.querySelectorAll('.tab-btn').forEach(b => {
+                b.classList.toggle('active', b.dataset.tab === tab);
+            });
+            if (tab === 'discover') {
+                renderKnowledgeGrid();
+            } else if (tab === 'profile') {
+                updateProfileStats();
+            }
+        }
+
+        function loadStats() {
+            try {
+                const saved = localStorage.getItem('hopeai_stats');
+                if (saved) Object.assign(stats, JSON.parse(saved));
+                const today = new Date().toDateString();
+                if (stats.lastDate !== today) {
+                    stats.todayChats = 0;
+                    stats.lastDate = today;
+                    saveStats();
+                }
+            } catch (e) {}
+        }
+
+        function saveStats() {
+            try {
+                stats.lastDate = new Date().toDateString();
+                localStorage.setItem('hopeai_stats', JSON.stringify(stats));
+            } catch (e) {}
+        }
+
+        function updateTodayCount() {
+            document.getElementById('todayCount').textContent = stats.todayChats;
+        }
+
+        function updateProfileStats() {
+            document.getElementById('profileTotalChats').textContent = stats.totalChats;
+            document.getElementById('profileToday').textContent = stats.todayChats;
+            document.getElementById('profileTotalMsgs').textContent = stats.totalMsgs;
+            document.getElementById('profileKB').textContent = kbHits;
+            document.getElementById('profileExpCount').textContent = experienceLibrary.length;
+            document.getElementById('profilePersonality').textContent = PERSONALITIES[settings.personality].name;
+            document.getElementById('profileTemp').textContent = settings.temperature;
+            document.getElementById('profileDualBrain').textContent = settings.dualBrain ? '已开启' : '已关闭';
+            document.getElementById('profileKBCount').textContent = knowledgeBase.length;
+            document.getElementById('themeToggle').checked = settings.theme === 'dark';
+        }
+
+        function loadConversations() {
+            try {
+                const saved = localStorage.getItem('hopeai_conversations');
+                if (saved) conversations = JSON.parse(saved);
+            } catch (e) {}
+        }
+
+        function saveConversations() {
+            try {
+                localStorage.setItem('hopeai_conversations', JSON.stringify(conversations));
+            } catch (e) {}
+        }
+
+        function loadSettings() {
+            try {
+                const saved = localStorage.getItem('hopeai_settings');
+                if (saved) Object.assign(settings, JSON.parse(saved));
+                document.getElementById('tempSlider').value = settings.temperature;
+                document.getElementById('contextSlider').value = settings.maxContext;
+                document.getElementById('streamToggle').checked = settings.stream;
+                document.getElementById('dualBrainToggle').checked = settings.dualBrain;
+                updateTempLabel();
+                updateContextLabel();
+                updatePersonalityUI();
+                if (settings.theme === 'light') {
+                    document.body.classList.add('light-mode');
+                }
+            } catch (e) {}
+        }
+
+        function saveSettings() {
+            settings.temperature = parseFloat(document.getElementById('tempSlider').value);
+            settings.maxContext = parseInt(document.getElementById('contextSlider').value);
+            settings.stream = document.getElementById('streamToggle').checked;
+            settings.dualBrain = document.getElementById('dualBrainToggle').checked;
+            try {
+                localStorage.setItem('hopeai_settings', JSON.stringify(settings));
+            } catch (e) {}
+            updateProfileStats();
+        }
+
+        function updateTempLabel() {
+            document.getElementById('tempLabel').textContent = document.getElementById('tempSlider').value;
+        }
+
+        function updateContextLabel() {
+            document.getElementById('contextLabel').textContent = document.getElementById('contextSlider').value + '轮';
+        }
+
+        function updateProfileDualBrain() {
+            settings.dualBrain = document.getElementById('dualBrainToggle').checked;
+            saveSettings();
+        }
+
+        function setPersonality(p) {
+            settings.personality = p;
+            saveSettings();
+            updatePersonalityUI();
+            showToast('已切换为 ' + PERSONALITIES[p].name + ' 人设');
+            updateProfileStats();
+        }
+
+        function updatePersonalityUI() {
+            document.querySelectorAll('.personality-btn').forEach(btn => {
+                if (btn.dataset.p === settings.personality) {
+                    btn.classList.add('border-primary', 'bg-primary/10');
+                    btn.classList.remove('border-dark-600');
+                } else {
+                    btn.classList.remove('border-primary', 'bg-primary/10');
+                    btn.classList.add('border-dark-600');
+                }
+            });
+        }
+
+        async function loadKnowledgeBase() {
+            try {
+                const res = await fetch('/data/knowledge.json');
+                const data = await res.json();
+                knowledgeBase = data.knowledge || [];
+                knowledgeCategories = data.categories || {};
+                document.getElementById('statKBCount').textContent = knowledgeBase.length;
+                document.getElementById('profileKBCount').textContent = knowledgeBase.length;
+                renderKnowledgeGrid();
+            } catch (e) {}
+        }
+
+        async function loadSkills() {
+            try {
+                const res = await fetch('/data/skills.json');
+                const data = await res.json();
+                skills = data.skills || [];
+                skillCategories = data.categories || {};
+                renderSkillGrid();
+            } catch (e) {}
+        }
+
+        // ===== 经验库（RAG 记忆系统）=====
+        let experienceLibrary = [];
+
+        async function loadExperienceLibrary() {
+            try {
+                const res = await fetch('/data/experience_library.json');
+                const data = await res.json();
+                experienceLibrary = data.experiences || [];
+            } catch (e) {}
+        }
+
+        function searchExperiences(query, topK = 2) {
+            if (!experienceLibrary || !experienceLibrary.length) return [];
+            
+            const keywords = query.toLowerCase().split(/[\s，。？！、；：""''（）\n]+/).filter(w => w.length > 1);
+            if (!keywords.length) return [];
+
+            const scored = experienceLibrary.map(exp => {
+                let score = 0;
+                const titleWords = (exp.title || '').toLowerCase();
+                const summaryWords = (exp.summary || '').toLowerCase();
+                const weaknessWords = (exp.weakness || '').toLowerCase();
+                const fixWords = (exp.fix_solution || '').toLowerCase();
+                const tags = (exp.tags || []).map(t => t.toLowerCase());
+
+                for (const kw of keywords) {
+                    if (titleWords.includes(kw)) score += 5;
+                    if (weaknessWords.includes(kw)) score += 4;
+                    if (fixWords.includes(kw)) score += 4;
+                    if (summaryWords.includes(kw)) score += 3;
+                    if (tags.some(t => t.includes(kw))) score += 3;
+                }
+                return { score, exp };
+            }).filter(x => x.score > 0);
+
+            scored.sort((a, b) => b.score - a.score);
+            return scored.slice(0, topK).map(x => x.exp);
+        }
+
+        function buildExperienceContext(query) {
+            const exps = searchExperiences(query);
+            if (!exps.length) return '';
+
+            let text = '\n\n=== 📚 历史经验参考 ===\n';
+            text += '（以下是之前积累的经验，供你参考，可能对你回答有帮助）\n\n';
+            exps.forEach((exp, i) => {
+                text += `【经验 ${i + 1}】${exp.title || '无标题'}\n`;
+                if (exp.weakness) text += `  问题点：${exp.weakness}\n`;
+                if (exp.fix_solution) text += `  方案：${exp.fix_solution}\n`;
+                if (exp.difficulty) text += `  难度：${exp.difficulty}\n`;
+                text += '\n';
+            });
+            text += '=== 经验参考结束 ===\n\n';
             return text;
         }
 
-        function setStatus(msg) {
-            status.textContent = msg;
+        function renderSkillGrid() {
+            const grid = document.getElementById('skillGrid');
+            if (!grid) return;
+            grid.innerHTML = skills.map(skill => `
+                <button onclick="activateSkill('${skill.id}')" class="bg-dark-800 hover:bg-dark-700 rounded-2xl p-4 text-left transition-all card-hover border border-dark-600">
+                    <div class="text-3xl mb-2">${skill.icon}</div>
+                    <div class="font-medium text-sm">${skill.name}</div>
+                    <div class="text-xs text-gray-500 mt-1 line-clamp-2">${skill.description}</div>
+                </button>
+            `).join('');
+        }
+
+        function detectSkill(text) {
+            const lower = text.toLowerCase();
+            for (const skill of skills) {
+                for (const kw of skill.keywords) {
+                    if (lower.includes(kw.toLowerCase())) {
+                        return skill;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function activateSkill(skillId) {
+            const skill = skills.find(s => s.id === skillId);
+            if (!skill) return;
+            activeSkill = skillId;
+            ensureChat();
+            addSystemMessage('✨ 已激活技能：' + skill.name);
+            addMessage('ai', `${skill.icon} **${skill.name}** 已上线！\n\n${skill.description}\n\n有什么需要帮忙的，直接说~`);
+            switchTab('chat');
+        }
+
+        function searchKnowledge(query) {
+            const lower = query.toLowerCase();
+            let bestMatch = null;
+            let bestScore = 0;
+
+            for (const item of knowledgeBase) {
+                let score = 0;
+                for (const kw of item.keywords) {
+                    if (lower.includes(kw.toLowerCase())) {
+                        score++;
+                    }
+                }
+                if (score > bestScore && score >= 2) {
+                    bestScore = score;
+                    bestMatch = item;
+                }
+            }
+            return bestMatch;
+        }
+
+        function filterKnowledge(category) {
+            currentKnowledgeCategory = category;
+            document.querySelectorAll('.category-chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.cat === category);
+            });
+            renderKnowledgeGrid();
+        }
+
+        function renderKnowledgeGrid() {
+            const grid = document.getElementById('knowledgeGrid');
+            if (!grid) return;
+            
+            let items = knowledgeBase;
+            if (currentKnowledgeCategory !== 'all') {
+                items = knowledgeBase.filter(k => k.category === currentKnowledgeCategory);
+            }
+            
+            const displayItems = items.slice(0, 10);
+            
+            grid.innerHTML = displayItems.map(item => {
+                const emoji = getCategoryEmoji(item.category);
+                const catName = knowledgeCategories[item.category] || item.category;
+                return `
+                    <div class="knowledge-card bg-dark-800 rounded-xl p-4 border border-dark-600 cursor-pointer" onclick="showKnowledgeDetail('${item.question.replace(/'/g, "\\'")}', '${item.answer.replace(/'/g, "\\'")}', '${catName}')">
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">${emoji} ${catName}</span>
+                        </div>
+                        <div class="font-medium text-sm mb-1">${escapeHtml(item.question)}</div>
+                        <div class="text-xs text-gray-400 line-clamp-2">${escapeHtml(item.answer.substring(0, 60))}...</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getCategoryEmoji(cat) {
+            const map = { nature: '🌿', tech: '💻', history: '📜', life: '🌱', animal: '🐾' };
+            return map[cat] || '📚';
+        }
+
+        function showKnowledgeDetail(question, answer, category) {
+            const chatId = ensureChat();
+            addSystemMessage('📚 ' + category);
+            addMessage('user', question);
+            addMessage('ai', '📚 ' + answer);
+            kbHits++;
+            switchTab('chat');
+        }
+
+        function randomKnowledge() {
+            if (knowledgeBase.length === 0) {
+                showToast('知识库加载中...');
+                return;
+            }
+            const random = knowledgeBase[Math.floor(Math.random() * knowledgeBase.length)];
+            const category = knowledgeCategories[random.category] || '冷知识';
+            addSystemMessage('📚 随机知识 · ' + category);
+            addMessage('ai', '📚 ' + random.answer);
+            kbHits++;
+        }
+
+        function dailyRandomKnowledge() {
+            if (knowledgeBase.length === 0) {
+                showToast('知识库加载中...');
+                return;
+            }
+            const random = knowledgeBase[Math.floor(Math.random() * knowledgeBase.length)];
+            const category = knowledgeCategories[random.category] || '冷知识';
+            const el = document.getElementById('dailyKnowledge');
+            el.innerHTML = `
+                <div class="text-xs text-primary mb-2">${getCategoryEmoji(random.category)} ${category}</div>
+                <div class="font-medium mb-2">${escapeHtml(random.question)}</div>
+                <div class="text-gray-400 text-sm">${escapeHtml(random.answer)}</div>
+            `;
+            el.classList.add('pop-in');
+            setTimeout(() => el.classList.remove('pop-in'), 300);
+        }
+
+        function startTriviaGame() {
+            if (knowledgeBase.length === 0) {
+                showToast('知识库加载中...');
+                return;
+            }
+            triviaState = { score: 0, num: 0, answered: false };
+            document.getElementById('triviaModal').classList.remove('hidden');
+            nextTrivia();
+        }
+
+        function nextTrivia() {
+            if (!triviaState) return;
+            triviaState.num++;
+            triviaState.answered = false;
+            
+            const random = knowledgeBase[Math.floor(Math.random() * knowledgeBase.length)];
+            const category = knowledgeCategories[random.category] || '冷知识';
+            
+            document.getElementById('triviaNum').textContent = triviaState.num;
+            document.getElementById('triviaScore').textContent = triviaState.score;
+            document.getElementById('triviaCategory').textContent = getCategoryEmoji(random.category) + ' ' + category;
+            document.getElementById('triviaQuestion').textContent = random.question;
+            document.getElementById('triviaResult').classList.add('hidden');
+            document.getElementById('triviaNextBtn').classList.add('hidden');
+            
+            const options = generateTriviaOptions(random);
+            const optionsEl = document.getElementById('triviaOptions');
+            optionsEl.innerHTML = options.map((opt, i) => `
+                <button onclick="answerTrivia(${i}, ${opt.correct})" class="trivia-opt w-full text-left p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-sm transition-colors border border-dark-600" data-index="${i}">
+                    <span class="inline-block w-6 h-6 rounded-full bg-dark-600 text-center text-xs leading-6 mr-2">${String.fromCharCode(65 + i)}</span>
+                    ${escapeHtml(opt.text)}
+                </button>
+            `).join('');
+            
+            triviaState.correctIndex = options.findIndex(o => o.correct);
+            triviaState.correctAnswer = random.answer;
+        }
+
+        function generateTriviaOptions(correctItem) {
+            const correct = { text: correctItem.answer.substring(0, 50) + (correctItem.answer.length > 50 ? '...' : ''), correct: true };
+            
+            const wrongItems = knowledgeBase.filter(k => k.question !== correctItem.question);
+            const wrongs = [];
+            for (let i = 0; i < 3 && wrongItems.length > 0; i++) {
+                const idx = Math.floor(Math.random() * wrongItems.length);
+                wrongs.push({ text: wrongItems[idx].answer.substring(0, 50) + (wrongItems[idx].answer.length > 50 ? '...' : ''), correct: false });
+                wrongItems.splice(idx, 1);
+            }
+            
+            const options = [correct, ...wrongs];
+            return options.sort(() => Math.random() - 0.5);
+        }
+
+        function answerTrivia(index, isCorrect) {
+            if (!triviaState || triviaState.answered) return;
+            triviaState.answered = true;
+            
+            const buttons = document.querySelectorAll('.trivia-opt');
+            buttons.forEach((btn, i) => {
+                btn.disabled = true;
+                if (i === triviaState.correctIndex) {
+                    btn.classList.add('bg-accent/20', 'border-accent', 'text-accent');
+                    btn.classList.remove('bg-dark-700', 'border-dark-600');
+                } else if (i === index && !isCorrect) {
+                    btn.classList.add('bg-red-500/20', 'border-red-500', 'text-red-400', 'shake');
+                    btn.classList.remove('bg-dark-700', 'border-dark-600');
+                }
+            });
+            
+            if (isCorrect) {
+                triviaState.score += 10;
+                document.getElementById('triviaResultTitle').textContent = '✅ 回答正确！+10分';
+                document.getElementById('triviaResultTitle').className = 'font-medium mb-2 text-accent';
+            } else {
+                document.getElementById('triviaResultTitle').textContent = '❌ 回答错误';
+                document.getElementById('triviaResultTitle').className = 'font-medium mb-2 text-red-400';
+            }
+            document.getElementById('triviaResultDesc').textContent = triviaState.correctAnswer;
+            document.getElementById('triviaResult').classList.remove('hidden');
+            document.getElementById('triviaNextBtn').classList.remove('hidden');
+            document.getElementById('triviaScore').textContent = triviaState.score;
+        }
+
+        function closeTrivia() {
+            document.getElementById('triviaModal').classList.add('hidden');
+            triviaState = null;
+        }
+
+        function isCodeRequest(text) {
+            const lower = text.toLowerCase();
+            if (NON_CODE_KEYWORDS.some(kw => lower.includes(kw))) return false;
+            return CODE_KEYWORDS.some(kw => lower.includes(kw.toLowerCase()));
+        }
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('w-72');
+            sidebar.classList.toggle('w-0');
+            overlay.classList.toggle('hidden');
+        }
+
+        // ===== 认证相关函数 =====
+        function handleUserAreaClick() {
+            if (currentUser) {
+                // 已登录，显示用户菜单（可以扩展）
+                showToast(`已登录: ${currentUser.username}`);
+            } else {
+                openAuthModal();
+            }
+        }
+
+        function openAuthModal() {
+            document.getElementById('authModal').classList.remove('hidden');
+            document.getElementById('authUsername').value = '';
+            document.getElementById('authPassword').value = '';
+            document.getElementById('authError').classList.add('hidden');
+            updateAuthUI();
+        }
+
+        function closeAuthModal() {
+            document.getElementById('authModal').classList.add('hidden');
+            isRegisterMode = false;
+        }
+
+        function toggleAuthMode() {
+            isRegisterMode = !isRegisterMode;
+            updateAuthUI();
+        }
+
+        function updateAuthUI() {
+            const title = document.getElementById('authTitle');
+            const btn = document.getElementById('authBtn');
+            const toggleBtn = document.getElementById('authToggleBtn');
+            const hint = document.getElementById('authHint');
+
+            if (isRegisterMode) {
+                title.textContent = '注册专属账号';
+                btn.textContent = '注册';
+                toggleBtn.textContent = '登录';
+                hint.textContent = '已有账号？点击「登录」';
+            } else {
+                title.textContent = '登录专属账号';
+                btn.textContent = '登录';
+                toggleBtn.textContent = '注册';
+                hint.textContent = '还没有账号？点击「注册」创建专属账号';
+            }
+        }
+
+        async function handleAuth() {
+            const username = document.getElementById('authUsername').value.trim();
+            const password = document.getElementById('authPassword').value;
+            const errorEl = document.getElementById('authError');
+
+            if (!username || !password) {
+                errorEl.textContent = '用户名和密码不能为空';
+                errorEl.classList.remove('hidden');
+                return;
+            }
+
+            errorEl.classList.add('hidden');
+
+            try {
+                if (isRegisterMode) {
+                    // 注册
+                    const response = await fetch('/auth/register', {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        errorEl.textContent = data.error || '注册失败';
+                        errorEl.classList.remove('hidden');
+                        return;
+                    }
+
+                    showToast('注册成功！');
+                    // 注册成功后自动登录
+                    currentUser = data.user;
+                    saveUserSession();
+                    updateUserUI();
+                    closeAuthModal();
+                } else {
+                    // 登录
+                    const response = await fetch('/auth', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ username, password })
+                    });
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        errorEl.textContent = data.error || '登录失败';
+                        errorEl.classList.remove('hidden');
+                        return;
+                    }
+
+                    currentUser = data.user;
+                    saveUserSession();
+                    updateUserUI();
+                    showToast(`欢迎回来，${currentUser.username}！`);
+
+                    // 加载用户记忆
+                    loadUserMemory();
+
+                    closeAuthModal();
+                }
+            } catch (e) {
+                errorEl.textContent = '网络错误，请稍后重试';
+                errorEl.classList.remove('hidden');
+                console.error('Auth error:', e);
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            localStorage.removeItem('hopeai_user_session');
+            updateUserUI();
+            showToast('已退出登录');
+        }
+
+        function saveUserSession() {
+            if (currentUser) {
+                localStorage.setItem('hopeai_user_session', JSON.stringify({
+                    username: currentUser.username,
+                    role: currentUser.role
+                }));
+            }
+        }
+
+        function loadUserSession() {
+            const session = localStorage.getItem('hopeai_user_session');
+            if (session) {
+                try {
+                    currentUser = JSON.parse(session);
+                    updateUserUI();
+                    loadUserMemory();
+                } catch (e) {
+                    localStorage.removeItem('hopeai_user_session');
+                }
+            }
+        }
+
+        function updateUserUI() {
+            const avatarEl = document.getElementById('userAvatar');
+            const nameEl = document.getElementById('userName');
+            const roleEl = document.getElementById('userRole');
+
+            if (currentUser) {
+                nameEl.textContent = currentUser.username;
+                roleEl.textContent = currentUser.role || '专属账号';
+                avatarEl.innerHTML = `<span class="text-dark-800 text-xs font-bold">${currentUser.username.charAt(0).toUpperCase()}</span>`;
+            } else {
+                nameEl.textContent = '点击登录';
+                roleEl.textContent = '专属账号';
+                avatarEl.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>`;
+            }
+        }
+
+        async function loadUserMemory() {
+            if (!currentUser) return;
+
+            try {
+                const response = await fetch('/auth/memory', {
+                    method: 'GET',
+                    headers: { 'X-Username': currentUser.username }
+                });
+                const data = await response.json();
+
+                if (data.success && data.memory) {
+                    // 可以用用户记忆来增强对话体验
+                    console.log('用户记忆已加载:', data.memory);
+                }
+            } catch (e) {
+                console.error('加载用户记忆失败:', e);
+            }
+        }
+
+        async function saveUserMemory(memoryData) {
+            if (!currentUser) return;
+
+            try {
+                await fetch('/auth/memory', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Username': currentUser.username
+                    },
+                    body: JSON.stringify(memoryData)
+                });
+            } catch (e) {
+                console.error('保存用户记忆失败:', e);
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            settings.theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
+            saveSettings();
+            showToast(settings.theme === 'light' ? '☀️ 浅色模式' : '🌙 深色模式');
+            document.getElementById('themeToggle').checked = settings.theme === 'dark';
+        }
+
+        function ensureChat() {
+            if (!currentChatId) {
+                const id = 'chat_' + Date.now();
+                conversations[id] = { id, title: '新对话', messages: [], createdAt: Date.now() };
+                stats.totalChats++;
+                currentChatId = id;
+                saveConversations();
+                saveStats();
+                renderChatList();
+                chatTitle.textContent = '新对话';
+                chatArea.innerHTML = '';
+            }
+            return currentChatId;
+        }
+
+        function newChat() {
+            const id = 'chat_' + Date.now();
+            conversations[id] = { id, title: '新对话', messages: [], createdAt: Date.now() };
+            stats.totalChats++;
+            saveConversations();
+            saveStats();
+            switchChat(id);
+            renderChatList();
+            gameState = null;
+            activeSkill = null;
+        }
+
+        function switchChat(id) {
+            currentChatId = id;
+            const chat = conversations[id];
+            if (!chat) return;
+
+            chatTitle.textContent = chat.title;
+            chatArea.innerHTML = '';
+            gameState = null;
+
+            if (chat.messages.length === 0) {
+                chatArea.innerHTML = `
+                    <div class="flex justify-center py-4">
+                        <div id="orb" class="w-16 h-16 rounded-full bg-gradient-to-br from-white via-gray-200 to-gray-400 orb-glow relative">
+                            <div class="absolute top-2 left-4 w-4 h-2.5 bg-white/80 rounded-full rotate-[-30deg]"></div>
+                        </div>
+                    </div>
+                    <div class="text-center text-gray-500 text-sm">
+                        <p class="font-medium text-white mb-1">欢迎使用希望AI</p>
+                        <p class="text-xs">由"希望——清"创造 · 有点毒舌但靠谱</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 max-w-md mx-auto mt-6">
+                        <button onclick="sendQuickCmd('给我讲一个冷知识')" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                            <div class="text-lg mb-1">📚</div>
+                            <div class="font-medium">冷知识</div>
+                            <div class="text-gray-500 text-xs mt-0.5">随机涨知识</div>
+                        </button>
+                        <button onclick="startGuessNumber()" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                            <div class="text-lg mb-1">🎮</div>
+                            <div class="font-medium">猜数字</div>
+                            <div class="text-gray-500 text-xs mt-0.5">休闲小游戏</div>
+                        </button>
+                        <button onclick="startIdiomGame()" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                            <div class="text-lg mb-1">🀄</div>
+                            <div class="font-medium">成语接龙</div>
+                            <div class="text-gray-500 text-xs mt-0.5">文字游戏</div>
+                        </button>
+                        <button onclick="sendQuickCmd('讲个笑话')" class="p-3 bg-dark-700 hover:bg-dark-600 rounded-xl text-xs text-left transition-colors card-hover">
+                            <div class="text-lg mb-1">😂</div>
+                            <div class="font-medium">讲笑话</div>
+                            <div class="text-gray-500 text-xs mt-0.5">开心一下</div>
+                        </button>
+                    </div>
+                `;
+            } else {
+                for (const msg of chat.messages) {
+                    if (msg.role === 'user') addMessage('user', msg.content, false, false);
+                    else if (msg.role === 'assistant') addMessage('ai', msg.content, false, false);
+                    else if (msg.role === 'system') addSystemMessage(msg.content, false);
+                }
+            }
+            renderChatList();
+        }
+
+        function renderChatList() {
+            chatList.innerHTML = '';
+            const sorted = Object.values(conversations).sort((a, b) => b.createdAt - a.createdAt);
+            const today = new Date(); today.setHours(0,0,0,0);
+            const weekAgo = new Date(today.getTime() - 7*24*60*60*1000);
+
+            let lastSection = '';
+            for (const chat of sorted) {
+                const date = new Date(chat.createdAt);
+                let section = date >= today ? '今天' : date >= weekAgo ? '最近一周' : '更早';
+                if (section !== lastSection) {
+                    const d = document.createElement('div');
+                    d.className = 'px-4 py-2 text-xs text-gray-500 font-medium';
+                    d.textContent = section;
+                    chatList.appendChild(d);
+                    lastSection = section;
+                }
+                const item = document.createElement('div');
+                item.className = 'sidebar-item flex items-center gap-3 px-3 py-2 mx-2 rounded-lg cursor-pointer transition-colors ' + (chat.id === currentChatId ? 'active' : '');
+                item.innerHTML = `
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>
+                    <span class="text-sm truncate flex-1">${escapeHtml(chat.title)}</span>
+                    <button onclick="event.stopPropagation(); deleteChat('${chat.id}')" class="p-1 hover:bg-dark-600 rounded text-gray-400 hover:text-red-400 transition-all opacity-60 hover:opacity-100">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                `;
+                item.onclick = () => { switchChat(chat.id); if (window.innerWidth < 768) toggleSidebar(); };
+                chatList.appendChild(item);
+            }
+        }
+
+        function deleteChat(id) {
+            delete conversations[id];
+            saveConversations();
+            if (id === currentChatId) {
+                const remaining = Object.keys(conversations);
+                if (remaining.length > 0) switchChat(remaining[0]);
+                else newChat();
+            }
+            renderChatList();
+        }
+
+        function clearAllData() {
+            if (!confirm('确定要清空所有数据吗？包括对话记录、设置、统计。')) return;
+            localStorage.removeItem('hopeai_conversations');
+            localStorage.removeItem('hopeai_settings');
+            localStorage.removeItem('hopeai_stats');
+            location.reload();
+        }
+
+        function showQuickCommands() {
+            const el = document.getElementById('quickCmds');
+            el.classList.toggle('hidden');
+        }
+
+        function sendQuickCmd(text) {
+            ensureChat();
+            messageInput.value = text;
+            document.getElementById('quickCmds').classList.add('hidden');
+            sendMessage();
+        }
+
+        function handleImageUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                ensureChat();
+                addMessage('user', '📷 图片：' + file.name);
+                addMessage('ai', '图已收到！虽然我现在还看不了图片内容，但我可以帮你处理图片相关的代码问题，或者聊点别的 😉');
+                input.value = '';
+            }
+        }
+
+        function autoResize(textarea) {
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+
+        function setLoading(loading) {
+            isLoading = loading;
+            const orbEl = document.getElementById('orb');
+            if (orbEl) {
+                if (loading) { orbEl.classList.remove('orb-glow'); orbEl.classList.add('orb-thinking'); }
+                else { orbEl.classList.remove('orb-thinking'); orbEl.classList.add('orb-glow'); }
+            }
+            sendBtn.disabled = loading;
+            sendBtn.classList.toggle('opacity-50', loading);
+        }
+
+        function addMessage(role, content, animate = true, save = true) {
+            if (!currentChatId) return null;
+            const div = document.createElement('div');
+            div.className = 'flex ' + (role === 'user' ? 'justify-end' : 'justify-start') + (animate ? ' animate-slide-up' : '');
+            const contentDiv = document.createElement('div');
+            if (role === 'user') {
+                contentDiv.className = 'bg-primary text-white px-4 py-3 rounded-2xl rounded-tr-sm max-w-[85%] text-sm shadow-lg';
+            } else {
+                contentDiv.className = 'bg-dark-700 text-white px-4 py-3 rounded-2xl rounded-tl-sm max-w-[90%] text-sm border border-dark-600 message-content';
+            }
+            contentDiv.innerHTML = formatMessage(content);
+            div.appendChild(contentDiv);
+            chatArea.appendChild(div);
+            scrollToBottom();
+
+            if (save && conversations[currentChatId]) {
+                conversations[currentChatId].messages.push({ role, content });
+                stats.totalMsgs++;
+                if (role === 'user') stats.todayChats++;
+                saveConversations();
+                saveStats();
+                updateTodayCount();
+                if (conversations[currentChatId].title === '新对话' && role === 'user') {
+                    conversations[currentChatId].title = content.substring(0, 20) + (content.length > 20 ? '...' : '');
+                    chatTitle.textContent = conversations[currentChatId].title;
+                }
+                renderChatList();
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('pre code').forEach(block => {
+                    if (!block.classList.contains('language-text')) Prism.highlightElement(block);
+                });
+            }, 50);
+            return contentDiv;
+        }
+
+        function addSystemMessage(text, save = true) {
+            if (!currentChatId) return;
+            const div = document.createElement('div');
+            div.className = 'flex justify-center animate-fade-in';
+            div.innerHTML = `<span class="text-xs text-gray-500 bg-dark-700 px-3 py-1 rounded-full">${escapeHtml(text)}</span>`;
+            chatArea.appendChild(div);
+            scrollToBottom();
+            if (save && conversations[currentChatId]) {
+                conversations[currentChatId].messages.push({ role: 'system', content: text });
+                saveConversations();
+            }
+        }
+
+        function formatMessage(text) {
+            if (!text) return '';
+            let html = text;
+            html = html.replace(/```(\w+)?\n?([\s\S]*?)```/g, function(match, lang, code) {
+                const language = lang || 'text';
+                const ext = getExtension(language);
+                return `<div class="code-block relative my-2 rounded-lg overflow-hidden"><div class="flex items-center justify-between bg-dark-800 px-3 py-1.5 border-b border-dark-600"><div class="flex items-center gap-2"><span class="text-xs text-gray-400">${language}</span><select class="ext-select text-xs bg-dark-700 text-gray-300 px-2 py-0.5 rounded border border-dark-600 cursor-pointer"><option value="${ext}" selected>${ext}</option><option value=".md">.md</option><option value=".txt">.txt</option><option value=".py">.py</option><option value=".js">.js</option><option value=".html">.html</option><option value=".css">.css</option><option value=".java">.java</option><option value=".cpp">.cpp</option><option value=".sql">.sql</option></select></div><div class="flex items-center gap-1"><button class="save-btn text-xs px-2 py-0.5 bg-accent/20 text-accent rounded hover:bg-accent/30" onclick="saveFile(this)">保存</button><button class="copy-btn text-xs text-gray-400 hover:text-white" onclick="copyCode(this)">复制</button></div></div><pre><code class="language-${language}">${escapeHtml(code)}</code></pre></div>`;
+            });
+            const paragraphs = html.split(/\n\n+/);
+            html = paragraphs.map(p => {
+                if (p.includes('<div class="code-block')) return p;
+                return '<p>' + p.replace(/\n/g, '<br>') + '</p>';
+            }).join('');
+            return html;
+        }
+
+        function getExtension(lang) {
+            const map = { python:'.py', py:'.py', javascript:'.js', js:'.js', typescript:'.ts', ts:'.ts', java:'.java', c:'.c', cpp:'.cpp', 'c++':'.cpp', html:'.html', css:'.css', sql:'.sql', bash:'.sh', shell:'.sh', json:'.json', go:'.go', rust:'.rs', markdown:'.md', md:'.md', ppt:'.ppt', pptx:'.pptx' };
+            return map[lang?.toLowerCase()] || '.txt';
+        }
+
+        function saveFile(btn) {
+            const codeBlock = btn.closest('.code-block');
+            const code = codeBlock.querySelector('code').textContent;
+            const select = codeBlock.querySelector('.ext-select');
+            const ext = select.value;
+            const filename = 'code' + ext;
+            const blob = new Blob([code], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url; a.download = filename;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+            showToast('已保存为 ' + filename);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function copyCode(btn) {
+            const code = btn.closest('.code-block').querySelector('code').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const original = btn.textContent; btn.textContent = '已复制';
+                setTimeout(() => btn.textContent = original, 2000);
+            });
+        }
+
+        function copyAllMessages() {
+            if (!currentChatId || !conversations[currentChatId]) {
+                showToast('没有对话可复制');
+                return;
+            }
+            const chat = conversations[currentChatId];
+            const msgs = chat.messages.filter(m => m.role !== 'system');
+            let text = `# ${chat.title}\n\n> 由希望AI V20 生成 | ${new Date(chat.createdAt).toLocaleString('zh-CN')}\n\n---\n\n`;
+            for (const m of msgs) {
+                const role = m.role === 'user' ? '你' : '希望AI';
+                text += `【${role}】\n\n${m.content}\n\n---\n\n`;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('已复制全部对话');
+            }).catch(() => {
+                showToast('复制失败，请手动复制');
+            });
+        }
+
+        function scrollToBottom() {
+            requestAnimationFrame(() => chatArea.scrollTop = chatArea.scrollHeight);
+        }
+
+        async function callAI(messages, temp) {
+            const personality = PERSONALITIES[settings.personality];
+            const systemMsg = `你是希望AI（HopeAI），由"希望——清"创造的智能助手。\n\n核心人设：${personality.prompt}\n\n能力：编程、技术、科普、冷知识、生活建议\n原则：不懂就说不懂，绝不胡编乱造\n安全：绝不参与违法违规内容`;
+
+            const msgs = [{ role: 'system', content: systemMsg }, ...messages];
+
+            const response = await fetch(API_ENDPOINT, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: msgs, temperature: temp ?? settings.temperature, skill: activeSkill })
+            });
+            const text = await response.text();
+            let data;
+            try { data = JSON.parse(text); } catch (e) { throw new Error('响应格式错误'); }
+            if (!data.success) throw new Error(data.error || data.errors?.[0]?.message || '请求失败');
+            const content = data?.result?.choices?.[0]?.message?.content;
+            if (!content) throw new Error('AI 返回内容为空');
+            return content;
+        }
+
+        function getContextMessages() {
+            if (!currentChatId) return [];
+            const all = conversations[currentChatId].messages.filter(m => m.role !== 'system');
+            const trimmed = all.slice(-settings.maxContext * 2);
+            return trimmed.map(m => ({ role: m.role, content: m.content }));
         }
 
         async function sendMessage() {
             const text = messageInput.value.trim();
-            if (!text) return;
+            if (!text || isLoading) return;
 
+            if (gameState) {
+                handleGameInput(text);
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                return;
+            }
+
+            const kbMatch = searchKnowledge(text);
+            
+            if (!activeSkill) {
+                const detectedSkill = detectSkill(text);
+                if (detectedSkill) {
+                    activeSkill = detectedSkill.id;
+                }
+            }
+            
             addMessage('user', text);
             messageInput.value = '';
-            setStatus('');
-
-            orb.classList.add('thinking');
-            sendBtn.disabled = true;
+            messageInput.style.height = 'auto';
+            setLoading(true);
 
             try {
-                if (isCodeRequest(text)) {
-                    addMessage('ai', '【创作者】正在生成代码...\n\n');
-
-                    const creatorMessages = [
-                        { role: 'system', content: getCreatorSystemPrompt() },
-                        { role: 'user', content: text }
-                    ];
-
-                    let creatorResult = await callAI(creatorMessages);
-                    addMessage('ai', creatorResult + '\n\n');
-
-                    const codeMatch = creatorResult.match(/```[\w]*\n?([\s\S]*?)```/);
-                    let currentCode = codeMatch ? codeMatch[1] : creatorResult;
-                    let currentResult = creatorResult;
-
-                    for (let round = 1; round <= MAX_REVIEW_ROUNDS; round++) {
-                        addMessage('ai', '【审查官】第 ' + round + ' 轮审查...\n');
-
-                        const reviewerMessages = [
-                            { role: 'system', content: getReviewerSystemPrompt() },
-                            { role: 'user', content: '请审查以下代码：\n```\n' + currentCode + '\n```' }
-                        ];
-
-                        const reviewResult = await callAI(reviewerMessages);
-                        const parsed = parseReviewResult(reviewResult);
-
-                        if (parsed.pass) {
-                            const note = parsed.reason && parsed.reason !== '代码审查通过' ? ' - ' + parsed.reason : '';
-                            addMessage('ai', '【审查官】✓ 审查通过！' + note + '\n\n');
-                            break;
-                        } else {
-                            addMessage('ai', '【审查官】✗ 发现问题：' + parsed.reason + '\n\n');
-
-                            if (round < MAX_REVIEW_ROUNDS) {
-                                addMessage('ai', '【创作者】正在根据审查意见修改...\n\n');
-
-                                const rewriteMessages = [
-                                    { role: 'system', content: getCreatorSystemPrompt() },
-                                    { role: 'user', content: text },
-                                    { role: 'assistant', content: currentResult },
-                                    { role: 'user', content: '审查发现以下问题，请修改代码：\n' + parsed.reason + '\n\n请输出修改后的完整代码。' }
-                                ];
-
-                                currentResult = await callAI(rewriteMessages);
-                                const newCodeMatch = currentResult.match(/```[\w]*\n?([\s\S]*?)```/);
-                                if (newCodeMatch) currentCode = newCodeMatch[1];
-                                addMessage('ai', currentResult + '\n\n');
-                            } else {
-                                addMessage('ai', '⚠️【系统】已达到最大审查次数，代码可能仍有问题，请自行检查。\n');
-                            }
-                        }
-                    }
-
-                    addMessage('ai', '【完成】\n');
-                } else {
-                    const chatMessages = [
-                        { role: 'system', content: getChatSystemPrompt() },
-                        { role: 'user', content: text }
-                    ];
-
-                    const result = await callAI(chatMessages);
-                    addMessage('ai', result);
+                if (kbMatch) {
+                    kbHits++;
+                    addMessage('ai', '📚 ' + kbMatch.answer);
+                    setLoading(false);
+                    updateProfileStats();
+                    return;
                 }
 
+                if (settings.dualBrain && isCodeRequest(text)) {
+                    await handleCodeRequest(text);
+                } else {
+                    await handleChatRequest(text);
+                }
             } catch (error) {
                 console.error('Error:', error);
-                addMessage('ai', '错误：' + (error.message || '服务器错误'));
+                addMessage('ai', '⚠️ ' + (error.message || '出错了'));
             } finally {
-                orb.classList.remove('thinking');
-                sendBtn.disabled = false;
+                setLoading(false);
+                searchContext = '';
+                updateProfileStats();
             }
         }
 
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
+        async function handleChatRequest(text) {
+            const typingDiv = addMessage('ai', '', false, false);
+            typingDiv.innerHTML = '<div class="flex gap-1"><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span></div>';
+
+            const messages = getContextMessages();
+            if (searchContext) messages.push({ role: 'user', content: '参考信息：' + searchContext });
+
+            // RAG 经验注入：检索相关历史经验
+            const expContext = buildExperienceContext(text);
+            if (expContext) {
+                messages.push({ role: 'system', content: expContext });
+            }
+
+            messages.push({ role: 'user', content: text });
+
+            const result = await callAI(messages);
+
+            if (settings.stream) {
+                await typeText(typingDiv, result);
+            } else {
+                typingDiv.innerHTML = formatMessage(result);
+                scrollToBottom();
+                setTimeout(() => {
+                    document.querySelectorAll('pre code').forEach(block => {
+                        if (!block.classList.contains('language-text')) Prism.highlightElement(block);
+                    });
+                }, 50);
+            }
+
+            if (conversations[currentChatId]) {
+                conversations[currentChatId].messages.push({ role: 'assistant', content: result });
+                saveConversations();
+                renderChatList();
+            }
+        }
+
+        async function handleCodeRequest(text) {
+            let statusDiv = addMessage('ai', '', false, false);
+            statusDiv.innerHTML = '<div class="flex gap-1"><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span></div> 【创作者】正在分析需求...';
+
+            const creatorMessages = [
+                { role: 'system', content: '你是专业的代码创作者。根据用户需求编写高质量可运行的代码。要求：代码可直接运行、遵循最佳实践、有必要注释、考虑边界情况和错误处理。输出格式：先1-2句思路说明，然后给出完整代码（用```语言名```包裹），最后简短使用说明。' },
+                { role: 'user', content: text },
+            ];
+            let creatorResult = await callAI(creatorMessages, 0.8);
+            statusDiv.innerHTML = formatMessage(creatorResult);
+            scrollToBottom();
+            setTimeout(() => {
+                document.querySelectorAll('pre code').forEach(block => {
+                    if (!block.classList.contains('language-text')) Prism.highlightElement(block);
+                });
+            }, 50);
+
+            if (conversations[currentChatId]) {
+                conversations[currentChatId].messages.push({ role: 'assistant', content: creatorResult });
+                saveConversations();
+            }
+
+            const codeMatch = creatorResult.match(/```[\w]*\n?([\s\S]*?)```/);
+            let currentCode = codeMatch ? codeMatch[1] : creatorResult;
+            let currentResult = creatorResult;
+
+            const MAX_ROUNDS = 2;
+            for (let round = 1; round <= MAX_ROUNDS; round++) {
+                const reviewDiv = addMessage('ai', '', false, false);
+                reviewDiv.innerHTML = '<div class="flex gap-1"><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span></div> 【审查官】第' + round + '轮审查中...';
+
+                const reviewerMessages = [
+                    { role: 'system', content: '你是严格的代码审查官。审查：Bug、安全漏洞、死循环、边界条件、代码规范、性能。只输出JSON：{"pass": true/false, "reason": "说明"}' },
+                    { role: 'user', content: '审查代码：\n```\n' + currentCode + '\n```' },
+                ];
+
+                try {
+                    const reviewResult = await callAI(reviewerMessages, 0.3);
+                    const parsed = parseReviewResult(reviewResult);
+
+                    if (parsed.pass) {
+                        const note = parsed.reason && parsed.reason !== '审查通过' ? ' - ' + parsed.reason : '';
+                        reviewDiv.innerHTML = '【审查官】✓ 审查通过' + note;
+                        if (conversations[currentChatId]) {
+                            conversations[currentChatId].messages.push({ role: 'assistant', content: '【审查官】✓ 审查通过' + note });
+                            saveConversations();
+                        }
+                        break;
+                    } else {
+                        reviewDiv.innerHTML = '【审查官】✗ 发现问题：' + parsed.reason;
+                        if (conversations[currentChatId]) {
+                            conversations[currentChatId].messages.push({ role: 'assistant', content: '【审查官】✗ 发现问题：' + parsed.reason });
+                            saveConversations();
+                        }
+                        if (round < MAX_ROUNDS) {
+                            const rewriteDiv = addMessage('ai', '', false, false);
+                            rewriteDiv.innerHTML = '<div class="flex gap-1"><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span><span class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></span></div> 【创作者】正在修改...';
+                            const rewriteMessages = [
+                                { role: 'system', content: '你是专业的代码创作者。' },
+                                { role: 'user', content: text },
+                                { role: 'assistant', content: currentResult },
+                                { role: 'user', content: '审查发现问题：' + parsed.reason + '\n请修改代码。' },
+                            ];
+                            currentResult = await callAI(rewriteMessages, 0.8);
+                            const newCodeMatch = currentResult.match(/```[\w]*\n?([\s\S]*?)```/);
+                            if (newCodeMatch) currentCode = newCodeMatch[1];
+                            rewriteDiv.innerHTML = formatMessage(currentResult);
+                            scrollToBottom();
+                            setTimeout(() => {
+                                document.querySelectorAll('pre code').forEach(block => {
+                                    if (!block.classList.contains('language-text')) Prism.highlightElement(block);
+                                });
+                            }, 50);
+                            if (conversations[currentChatId]) {
+                                conversations[currentChatId].messages.push({ role: 'assistant', content: currentResult });
+                                saveConversations();
+                            }
+                        }
+                    }
+                } catch (e) {
+                    reviewDiv.innerHTML = '【审查官】审查超时，默认通过';
+                    break;
+                }
+            }
+        }
+
+        function parseReviewResult(text) {
+            if (!text) return { pass: true, reason: '空内容' };
+            try {
+                const match = text.match(/\{[\s\S]*?\}/);
+                if (match) {
+                    const parsed = JSON.parse(match[0]);
+                    if (typeof parsed.pass === 'boolean') return parsed;
+                }
+            } catch (e) {}
+            return { pass: true, reason: '解析失败，默认通过' };
+        }
+
+        async function typeText(element, text, speed = 20) {
+            element.innerHTML = '';
+            element.classList.add('cursor-blink');
+            let displayText = '';
+            let i = 0;
+            while (i < text.length) {
+                displayText += text[i];
+                i++;
+                if (i % 3 === 0 || i === text.length) {
+                    element.innerHTML = formatMessage(displayText);
+                    scrollToBottom();
+                }
+                await new Promise(r => setTimeout(r, speed));
+            }
+            element.classList.remove('cursor-blink');
+            element.innerHTML = formatMessage(text);
+            scrollToBottom();
+            setTimeout(() => {
+                document.querySelectorAll('pre code').forEach(block => {
+                    if (!block.classList.contains('language-text')) Prism.highlightElement(block);
+                });
+            }, 100);
+        }
+
+        function startGuessNumber() {
+            ensureChat();
+            const answer = Math.floor(Math.random() * 100) + 1;
+            gameState = { type: 'guessNumber', answer, tries: 0, maxTries: 10 };
+            addSystemMessage('🎮 猜数字游戏开始');
+            addMessage('ai', '🎮 来玩猜数字！我想了一个 1-100 之间的数字，你有 10 次机会。说数字来猜吧~');
+        }
+
+        function startIdiomGame() {
+            ensureChat();
+            gameState = { type: 'idiom', last: '', count: 0 };
+            addSystemMessage('🀄 成语接龙游戏开始');
+            addMessage('ai', '🀄 成语接龙！你先说一个成语，我接最后一个字的音~');
+        }
+
+        function handleGameInput(text) {
+            if (!gameState) return;
+
+            if (text === '退出游戏' || text === '不玩了') {
+                addMessage('user', text);
+                addMessage('ai', '好嘞，游戏结束！随时回来玩~ 👋');
+                gameState = null;
+                return;
+            }
+
+            if (gameState.type === 'guessNumber') {
+                addMessage('user', text);
+                const guess = parseInt(text);
+                if (isNaN(guess) || guess < 1 || guess > 100) {
+                    addMessage('ai', '兄弟，说个 1-100 之间的数字啊！别搞我 😅');
+                    return;
+                }
+                gameState.tries++;
+                if (guess === gameState.answer) {
+                    addMessage('ai', `🎉 猜对了！答案就是 ${gameState.answer}。你用了 ${gameState.tries} 次，牛逼！`);
+                    gameState = null;
+                } else if (gameState.tries >= gameState.maxTries) {
+                    addMessage('ai', `💀 没机会了！答案是 ${gameState.answer}。下次加油~`);
+                    gameState = null;
+                } else if (guess < gameState.answer) {
+                    addMessage('ai', `小了小了！往上猜~ 还剩 ${gameState.maxTries - gameState.tries} 次机会`);
+                } else {
+                    addMessage('ai', `大了大了！往下猜~ 还剩 ${gameState.maxTries - gameState.tries} 次机会`);
+                }
+            } else if (gameState.type === 'idiom') {
+                addMessage('user', text);
+                if (text.length < 4) {
+                    addMessage('ai', '兄弟，成语至少四个字吧 😂 重来');
+                    return;
+                }
+                gameState.count++;
+                const lastChar = text[text.length - 1];
+                const next = IDIOMS.find(i => i[0] === lastChar) || IDIOMS[Math.floor(Math.random() * IDIOMS.length)];
+                addMessage('ai', `${next}\n\n轮到你了，接"${next[next.length - 1]}"开头的~ （已接 ${gameState.count} 轮）`);
+                gameState.last = next;
+            }
+        }
+
+        function exportMarkdown() {
+            if (!currentChatId || !conversations[currentChatId]) {
+                showToast('没有对话可导出');
+                return;
+            }
+            const chat = conversations[currentChatId];
+            const msgs = chat.messages.filter(m => m.role !== 'system');
+            let md = `# ${chat.title}\n\n> 由希望AI V20 生成 | ${new Date(chat.createdAt).toLocaleString('zh-CN')}\n\n---\n\n`;
+            for (const m of msgs) {
+                const role = m.role === 'user' ? '**你**' : '**希望AI**';
+                md += `### ${role}\n\n${m.content}\n\n---\n\n`;
+            }
+            const blob = new Blob([md], { type: 'text/markdown;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${chat.title.replace(/[^a-zA-Z0-9\u4e00-\u9fa5]/g, '_')}.md`;
+            document.body.appendChild(a); a.click();
+            document.body.removeChild(a); URL.revokeObjectURL(url);
+            showToast('已导出 Markdown');
+        }
+
+        function showStats() {
+            document.getElementById('statTotalChats').textContent = stats.totalChats;
+            document.getElementById('statToday').textContent = stats.todayChats;
+            document.getElementById('statTotalMsgs').textContent = stats.totalMsgs;
+            document.getElementById('statKB').textContent = kbHits;
+            document.getElementById('statPersonality').textContent = PERSONALITIES[settings.personality].name;
+            document.getElementById('statsModal').classList.remove('hidden');
+        }
+
+        function closeStats() {
+            document.getElementById('statsModal').classList.add('hidden');
+        }
+
+        function openSettings() {
+            document.getElementById('settingsModal').classList.remove('hidden');
+        }
+
+        function closeSettings() {
+            saveSettings();
+            document.getElementById('settingsModal').classList.add('hidden');
+        }
+
+        let recognition = null;
+        let isListening = false;
+
+        function toggleVoiceInput() {
+            const voiceBtn = document.getElementById('voiceBtn');
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) { showToast('当前浏览器不支持语音输入'); return; }
+            if (isListening) { stopVoice(); return; }
+            recognition = new SpeechRecognition();
+            recognition.lang = 'zh-CN';
+            recognition.interimResults = true;
+            recognition.continuous = false;
+            recognition.onstart = function() {
+                isListening = true;
+                voiceBtn.classList.add('bg-red-500', 'hover:bg-red-400');
+                voiceBtn.classList.remove('bg-dark-700', 'hover:bg-dark-600', 'text-gray-400');
+                voiceBtn.classList.add('text-white');
+                showToast('正在聆听...');
+            };
+            recognition.onresult = function(event) {
+                let transcript = '';
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                    transcript += event.results[i][0].transcript;
+                }
+                messageInput.value = transcript;
+                autoResize(messageInput);
+            };
+            recognition.onerror = function(event) {
+                stopVoice();
+                if (event.error === 'not-allowed') showToast('请允许麦克风权限');
+                else showToast('语音识别出错');
+            };
+            recognition.onend = function() { stopVoice(); };
+            try { recognition.start(); } catch (e) { showToast('语音输入启动失败'); }
+        }
+
+        function stopVoice() {
+            isListening = false;
+            const voiceBtn = document.getElementById('voiceBtn');
+            if (voiceBtn) {
+                voiceBtn.classList.remove('bg-red-500', 'hover:bg-red-400', 'text-white');
+                voiceBtn.classList.add('bg-dark-700', 'hover:bg-dark-600', 'text-gray-400');
+            }
+            if (recognition) { try { recognition.stop(); } catch (e) {} }
+        }
+
+        function showToast(msg) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'bg-dark-700 text-white px-4 py-2 rounded-full text-sm shadow-lg border border-dark-600 animate-fade-in';
+            toast.textContent = msg;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+
+        // ===== AI 辩论擂台 =====
+        let debateState = {
+            topic: '',
+            sideAStyle: 'rational',
+            sideBStyle: 'emotional',
+            totalRounds: 5,
+            currentRound: 0,
+            messages: [],
+            isPaused: false,
+            isRunning: false,
+            votes: { a: 0, b: 0 }
+        };
+
+        const DEBATE_STYLES = {
+            rational: { name: '理性逻辑派', prompt: '你是一位理性的辩手，擅长用逻辑、数据和事实说话。论点清晰，推理严谨，不被情绪左右。' },
+            optimistic: { name: '乐观积极派', prompt: '你是一位乐观积极的辩手，总能看到事情好的一面，用发展的眼光看问题，充满希望和正能量。' },
+            tech: { name: '科技支持者', prompt: '你是一位科技乐观主义者，相信技术进步能解决大多数问题，对创新和未来充满信心。' },
+            conservative: { name: '保守传统派', prompt: '你是一位保守传统的辩手，重视历史、经验和稳定性，对激进的变化持谨慎态度。' },
+            emotional: { name: '感性人文派', prompt: '你是一位感性的辩手，擅长从人文关怀、情感体验和人性角度出发，用故事和共情打动人心。' },
+            pessimistic: { name: '悲观现实派', prompt: '你是一位现实的悲观主义者，总能看到潜在的风险和问题，警惕盲目乐观，强调居安思危。' },
+            skeptic: { name: '怀疑论者', prompt: '你是一位怀疑论者，从不轻易接受任何观点，喜欢质疑、追问、挑毛病，追求严谨和真相。' },
+            rebel: { name: '叛逆反对派', prompt: '你是一位叛逆的辩手，喜欢唱反调，不走寻常路，总能从意想不到的角度反驳对方，语不惊人死不休。' }
+        };
+
+        function openDebateArena() {
+            document.getElementById('debatePage').classList.add('active');
+            document.getElementById('discoverPage').classList.remove('active');
+
+            // 尝试恢复之前的辩论状态
+            const saved = localStorage.getItem('hopeai_debate_state');
+            if (saved) {
+                try {
+                    const savedState = JSON.parse(saved);
+                    if (savedState.isRunning || savedState.currentRound > 0) {
+                        if (confirm('检测到上次未完成的辩论，是否恢复？')) {
+                            restoreDebateState(savedState);
+                            return;
+                        } else {
+                            localStorage.removeItem('hopeai_debate_state');
+                        }
+                    }
+                } catch (e) {}
+            }
+            resetDebate();
+        }
+
+        function restoreDebateState(savedState) {
+            debateState = savedState;
+            // 显示辩论场地
+            document.getElementById('debateSetup').classList.add('hidden');
+            document.getElementById('debateSetup').classList.remove('flex', 'flex-col');
+            document.getElementById('debateArena').classList.remove('hidden');
+            document.getElementById('debateArena').classList.add('flex', 'flex-col');
+            // 重绘消息
+            const container = document.getElementById('debateMessages');
+            container.innerHTML = '';
+            let roundNum = 0;
+            for (let i = 0; i < debateState.messages.length; i++) {
+                const msg = debateState.messages[i];
+                if (i % 2 === 0) {
+                    roundNum++;
+                    addDebateSystemMessage(`⚔️ 第 ${roundNum} 轮 / 共 ${debateState.totalRounds} 轮`);
+                }
+                const isSideA = msg.role === 'A';
+                const fakeId = 'restored-' + i;
+                addDebateMessage(fakeId, isSideA, msg.content, false);
+            }
+            // 更新状态
+            if (debateState.isPaused) {
+                document.getElementById('pauseDebateBtn').innerHTML = '▶️ 继续';
+                document.getElementById('debateStatus').textContent = '已暂停';
+            } else {
+                document.getElementById('pauseDebateBtn').innerHTML = '⏸️ 暂停';
+                document.getElementById('debateStatus').textContent = '辩论进行中...';
+                // 如果正在运行中，继续下一轮
+                if (debateState.isRunning && !debateState.isPaused) {
+                    setTimeout(() => runDebateRound(), 1000);
+                }
+            }
+        }
+
+        function saveDebateState() {
+            try {
+                localStorage.setItem('hopeai_debate_state', JSON.stringify(debateState));
+            } catch (e) {}
+        }
+
+        function closeDebateArena() {
+            document.getElementById('debatePage').classList.remove('active');
+            document.getElementById('discoverPage').classList.add('active');
+        }
+
+        function resetDebate() {
+            debateState = {
+                topic: '',
+                sideAStyle: 'rational',
+                sideBStyle: 'emotional',
+                totalRounds: 5,
+                currentRound: 0,
+                messages: [],
+                isPaused: false,
+                isRunning: false,
+                votes: { a: 0, b: 0 }
+            };
+            localStorage.removeItem('hopeai_debate_state');
+            document.getElementById('debateSetup').classList.remove('hidden');
+            document.getElementById('debateSetup').classList.add('flex', 'flex-col');
+            document.getElementById('debateArena').classList.add('hidden');
+            document.getElementById('debateArena').classList.remove('flex', 'flex-col');
+            document.getElementById('debateResult').classList.add('hidden');
+            document.getElementById('debateResult').classList.remove('flex', 'flex-col');
+            document.getElementById('debateMessages').innerHTML = '';
+            document.getElementById('debateStatus').textContent = '准备开始';
+            setDebateRounds(5);
+        }
+
+        function setDebateTopic(topic) {
+            document.getElementById('debateTopic').value = topic;
+        }
+
+        function setDebateRounds(rounds) {
+            debateState.totalRounds = rounds;
+            document.querySelectorAll('.rounds-btn').forEach(btn => {
+                if (parseInt(btn.dataset.rounds) === rounds) {
+                    btn.classList.remove('bg-dark-700', 'border-dark-600');
+                    btn.classList.add('bg-primary', 'border-primary');
+                } else {
+                    btn.classList.add('bg-dark-700', 'border-dark-600');
+                    btn.classList.remove('bg-primary', 'border-primary');
+                }
+            });
+        }
+
+        function startDebate() {
+            const topic = document.getElementById('debateTopic').value.trim();
+            if (!topic) {
+                showToast('请先输入辩题哦~');
+                return;
+            }
+
+            debateState.topic = topic;
+            debateState.sideAStyle = document.getElementById('debateSideA').value;
+            debateState.sideBStyle = document.getElementById('debateSideB').value;
+            debateState.isRunning = true;
+            debateState.currentRound = 0;
+
+            document.getElementById('debateSetup').classList.add('hidden');
+            document.getElementById('debateSetup').classList.remove('flex', 'flex-col');
+            document.getElementById('debateArena').classList.remove('hidden');
+            document.getElementById('debateArena').classList.add('flex', 'flex-col');
+            document.getElementById('debateStatus').textContent = '辩论进行中...';
+
+            runDebateRound();
+        }
+
+        async function runDebateRound() {
+            if (!debateState.isRunning || debateState.isPaused) return;
+
+            debateState.currentRound++;
+
+            if (debateState.currentRound > debateState.totalRounds) {
+                finishDebate();
+                return;
+            }
+
+            const roundLabel = `第 ${debateState.currentRound} 轮`;
+            addDebateSystemMessage(`⚔️ ${roundLabel} / 共 ${debateState.totalRounds} 轮`);
+
+            await delay(500);
+
+            // 正方发言
+            await generateDebateSpeech('A');
+
+            if (!debateState.isRunning || debateState.isPaused) return;
+
+            await delay(800);
+
+            // 反方发言
+            await generateDebateSpeech('B');
+
+            if (!debateState.isRunning || debateState.isPaused) return;
+
+            // 继续下一轮
+            setTimeout(() => runDebateRound(), 1000);
+        }
+
+        async function generateDebateSpeech(side) {
+            const isSideA = side === 'A';
+            const style = isSideA ? DEBATE_STYLES[debateState.sideAStyle] : DEBATE_STYLES[debateState.sideBStyle];
+            const position = isSideA ? '正方' : '反方';
+            const positionDesc = isSideA ? '支持' : '反对';
+
+            const msgId = 'debate-msg-' + Date.now() + '-' + side;
+            addDebateMessage(msgId, isSideA, `${position}（${style.name}）正在思考...`, true);
+
+            // 构建对话历史
+            const messages = [];
+
+            // 系统提示：辩手人设
+            let systemPrompt = style.prompt + `\n\n你现在是一场辩论赛的${position}，你的立场是${positionDesc}这个观点：「${debateState.topic}」\n\n`;
+            systemPrompt += `辩论规则：\n`;
+            systemPrompt += `- 用中文发言，每轮发言 150-300 字左右\n`;
+            systemPrompt += `- 先回应对方上一轮的观点，然后提出自己的新论点\n`;
+            systemPrompt += `- 要有理有据，可以用举例、数据、逻辑推理\n`;
+            systemPrompt += `- 风格鲜明，有攻击性但不失风度\n`;
+            systemPrompt += `- 直接输出你的辩词，不要加「我方认为」之类的前缀\n`;
+
+            messages.push({ role: 'system', content: systemPrompt });
+
+            // 加入历史对话
+            for (const msg of debateState.messages) {
+                if (msg.role === 'A') {
+                    messages.push({ role: 'user', content: '【正方发言】' + msg.content });
+                } else if (msg.role === 'B') {
+                    messages.push({ role: 'assistant', content: msg.content });
+                }
+            }
+
+            // 如果是第一轮且是正方，先立论
+            if (debateState.currentRound === 1 && isSideA) {
+                messages.push({ role: 'user', content: '请进行第一轮立论，亮明你的核心观点。' });
+            } else if (debateState.currentRound === 1 && !isSideA) {
+                messages.push({ role: 'user', content: '请针对正方的立论进行反驳，并亮明你方观点。' });
+            } else {
+                messages.push({ role: 'user', content: '这是第 ' + debateState.currentRound + ' 轮辩论，请回应对方观点并继续深入。' });
+            }
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: messages,
+                        temperature: 0.8,
+                        stream: false
+                    })
+                });
+
+                const data = await response.json();
+                let content = data?.result?.choices?.[0]?.message?.content || '（发言失败）';
+
+                // 清理可能的前缀
+                content = content.replace(/^【正方发言】[:：]?\s*/, '');
+                content = content.replace(/^【反方发言】[:：]?\s*/, '');
+                content = content.replace(/^我方认为[:：]?\s*/, '');
+
+                updateDebateMessage(msgId, content);
+                debateState.messages.push({ role: side, content: content });
+                saveDebateState();
+
+            } catch (e) {
+                updateDebateMessage(msgId, '（发言出错了：' + e.message + '）');
+            }
+        }
+
+        function addDebateSystemMessage(text) {
+            const container = document.getElementById('debateMessages');
+            const div = document.createElement('div');
+            div.className = 'text-center';
+            div.innerHTML = `<span class="text-xs text-gray-500 bg-dark-700 px-3 py-1 rounded-full">${text}</span>`;
+            container.appendChild(div);
+            scrollDebateToBottom();
+        }
+
+        function addDebateMessage(id, isSideA, content, isThinking = false) {
+            const container = document.getElementById('debateMessages');
+            const div = document.createElement('div');
+            div.id = id;
+            div.className = `flex ${isSideA ? 'justify-start' : 'justify-end'} animate-fade-in`;
+
+            const colorClass = isSideA ? 'bg-blue-500/20 border-blue-500/30' : 'bg-red-500/20 border-red-500/30';
+            const icon = isSideA ? '🔵' : '🔴';
+            const sideName = isSideA ? '正方' : '反方';
+
+            div.innerHTML = `
+                <div class="max-w-[85%] ${colorClass} border rounded-2xl p-3">
+                    <div class="flex items-center gap-1.5 mb-1.5">
+                        <span class="text-sm">${icon}</span>
+                        <span class="text-xs font-medium text-gray-400">${sideName}</span>
+                    </div>
+                    <div class="text-sm text-gray-200 ${isThinking ? 'text-gray-500' : ''}">${isThinking ? content : escapeHtml(content)}</div>
+                </div>
+            `;
+            container.appendChild(div);
+            scrollDebateToBottom();
+        }
+
+        function updateDebateMessage(id, content) {
+            const div = document.getElementById(id);
+            if (!div) return;
+            const contentDiv = div.querySelector('.text-gray-200, .text-gray-500');
+            if (contentDiv) {
+                contentDiv.classList.remove('text-gray-500');
+                contentDiv.classList.add('text-gray-200');
+                contentDiv.innerHTML = escapeHtml(content);
+            }
+            scrollDebateToBottom();
+        }
+
+        function scrollDebateToBottom() {
+            const container = document.getElementById('debateMessages');
+            if (!container) return;
+            // 两种方式一起用，确保滚动到底部
+            container.scrollTop = container.scrollHeight;
+            requestAnimationFrame(() => {
+                container.scrollTop = container.scrollHeight;
+            });
+        }
+
+        function pauseDebate() {
+            debateState.isPaused = !debateState.isPaused;
+            const btn = document.getElementById('pauseDebateBtn');
+            if (debateState.isPaused) {
+                btn.innerHTML = '▶️ 继续';
+                document.getElementById('debateStatus').textContent = '已暂停';
+                showToast('辩论已暂停');
+            } else {
+                btn.innerHTML = '⏸️ 暂停';
+                document.getElementById('debateStatus').textContent = '辩论进行中...';
+                showToast('辩论继续');
+                runDebateRound();
+            }
+        }
+
+        function endDebateEarly() {
+            if (confirm('确定要提前结束辩论吗？')) {
+                debateState.isRunning = false;
+                finishDebate();
+            }
+        }
+
+        async function finishDebate() {
+            debateState.isRunning = false;
+            document.getElementById('debateStatus').textContent = '辩论结束';
+            // 辩论结束，清除保存的状态
+            localStorage.removeItem('hopeai_debate_state');
+
+            await delay(1000);
+
+            document.getElementById('debateArena').classList.add('hidden');
+            document.getElementById('debateArena').classList.remove('flex', 'flex-col');
+            document.getElementById('debateResult').classList.remove('hidden');
+            document.getElementById('debateResult').classList.add('flex', 'flex-col');
+
+            // 生成裁判总结
+            generateDebateSummary();
+        }
+
+        async function generateDebateSummary() {
+            const summaryDiv = document.getElementById('summaryContent');
+            summaryDiv.innerHTML = '<span class="text-gray-500">裁判正在总结中...</span>';
+
+            const allSpeeches = debateState.messages.map((m, i) => {
+                const side = m.role === 'A' ? '正方' : '反方';
+                return `【${side}第${Math.floor(i/2)+1}轮】${m.content}`;
+            }).join('\n\n');
+
+            const systemPrompt = `你是一位公正的辩论赛裁判。请对以下辩论进行总结。
+
+辩题：${debateState.topic}
+
+正方立场：支持
+反方立场：反对
+
+辩论记录：
+${allSpeeches}
+
+请按以下格式总结（用 Markdown）：
+
+### 📊 总评
+一句话总结这场辩论的整体情况
+
+### 🔵 正方核心观点
+- 观点1
+- 观点2
+- 观点3
+
+### 🔴 反方核心观点
+- 观点1
+- 观点2
+- 观点3
+
+### 💡 精彩交锋
+简述 1-2 个最精彩的交锋点
+
+### 🎯 裁判点评
+公正评价双方表现，指出各自的优点和不足
+
+最后给一个中立的总结，不要直接说谁赢，让观众自己判断。`;
+
+            try {
+                const response = await fetch(API_ENDPOINT, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [{ role: 'user', content: systemPrompt }],
+                        temperature: 0.7,
+                        stream: false
+                    })
+                });
+
+                const data = await response.json();
+                let content = data?.result?.choices?.[0]?.message?.content || '总结生成失败';
+                summaryDiv.innerHTML = renderMarkdown(content);
+
+            } catch (e) {
+                summaryDiv.innerHTML = '<span class="text-red-400">总结生成失败：' + e.message + '</span>';
+            }
+        }
+
+        function voteForA() {
+            debateState.votes.a++;
+            document.getElementById('voteACount').textContent = debateState.votes.a + ' 票';
+            const btn = document.getElementById('voteABtn');
+            btn.classList.add('ring-2', 'ring-blue-500');
+            showToast('已投票给正方！');
+        }
+
+        function voteForB() {
+            debateState.votes.b++;
+            document.getElementById('voteBCount').textContent = debateState.votes.b + ' 票';
+            const btn = document.getElementById('voteBBtn');
+            btn.classList.add('ring-2', 'ring-red-500');
+            showToast('已投票给反方！');
+        }
+
+        function restartDebate() {
+            resetDebate();
+            document.getElementById('debateTopic').value = debateState.topic || '';
+        }
+
+        function delay(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // 页面可见性变化：切到后台自动暂停辩论
+        document.addEventListener('visibilitychange', function() {
+            if (!debateState.isRunning) return;
+            if (document.hidden) {
+                // 切到后台，自动暂停
+                if (!debateState.isPaused) {
+                    debateState.isPaused = true;
+                    const btn = document.getElementById('pauseDebateBtn');
+                    if (btn) btn.innerHTML = '▶️ 继续';
+                    const status = document.getElementById('debateStatus');
+                    if (status) status.textContent = '后台暂停中';
+                    saveDebateState();
+                }
+            }
         });
+
+        messageInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        init();
     </script>
 </body>
 </html>

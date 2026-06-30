@@ -1,0 +1,12 @@
+name = "hopeai-v20"
+compatibility_date = "2024-01-01"
+pages_build_output_dir = "."
+
+[[kv_namespaces]]
+binding = "HOPEAI_KV"
+id = "YOUR_KV_NAMESPACE_ID"
+
+[vars]
+CF_ACCOUNT_ID = "your-account-id"
+CF_API_TOKEN = "your-api-token"
+CF_MODEL = "@cf/moonshotai/kimi-k2.7-code"
